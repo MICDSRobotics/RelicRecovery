@@ -26,8 +26,8 @@ public class MecanumArcadeDrive extends OpMode {
 
     private MecanumDrive drivetrain;
 
-    private DcMotor raiser;
-    private Servo grabber;
+    Servo clawleft;
+    Servo clawright;
 
     @Override
     public void init() {
@@ -36,11 +36,8 @@ public class MecanumArcadeDrive extends OpMode {
         robot = new Robot(hardwareMap);
         game1 = new ControllerWrapper(gamepad1);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
-
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
-
-        raiser.setDirection(DcMotorSimple.Direction.REVERSE);
+        clawleft = hardwareMap.servo.get("clawleft");
+        clawright = hardwareMap.servo.get("clawright");
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -62,35 +59,14 @@ public class MecanumArcadeDrive extends OpMode {
 
         drivetrain.complexDrive(gamepad1, telemetry);
 
-        if(gamepad1.y){
-            raiser.setPower(1);
-        } else if (gamepad1.a) {
-            raiser.setPower(-1);
-        } else {
-            raiser.setPower(0);
-        }
-
-        // Disabled gripper during open house because hardware hoohas
-        if(gamepad1.left_bumper){
-            grabber.setPosition(Math.min(0, grabber.getPosition() - 0.01));
-        } else if (gamepad1.right_bumper){
-            grabber.setPosition(Math.max(1, grabber.getPosition() + 0.01));
-        }
-
-        telemetry.addData("Servo Position", grabber.getPosition());
-
-
-        /*
         if (gamepad1.a) {
-            // cache the gamepad a button
-            game1.getLetterInterface().getAButton().setPress(true);
+            this.clawright.setPosition(1);
+            this.clawleft.setPosition(1);
         }
-        else if (game1.getLetterInterface().getAButton().isPressed()) {
-            // do something
-            // set the interface back
-            game1.getLetterInterface().getAButton().setPress(false);
+        else if (gamepad1.b) {
+            this.clawright.setPosition(-1);
+            this.clawleft.setPosition(-1);
         }
-        */
 
         telemetry.addData("Main1", drivetrain.getmajorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor1", drivetrain.getMinorDiagonal().getMotor1().getPower());
