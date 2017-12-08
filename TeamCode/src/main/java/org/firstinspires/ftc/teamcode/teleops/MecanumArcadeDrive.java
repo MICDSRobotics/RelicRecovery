@@ -26,8 +26,10 @@ public class MecanumArcadeDrive extends OpMode {
 
     private MecanumDrive drivetrain;
 
-    Servo clawleft;
-    Servo clawright;
+    Servo armX;
+    Servo armY;
+    double x = 0.0;
+    double y = 0.0;
 
     @Override
     public void init() {
@@ -36,8 +38,9 @@ public class MecanumArcadeDrive extends OpMode {
         robot = new Robot(hardwareMap);
         game1 = new ControllerWrapper(gamepad1);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
-        clawleft = hardwareMap.servo.get("clawleft");
-        clawright = hardwareMap.servo.get("clawright");
+
+        armX = hardwareMap.servo.get("armX");
+        armY = hardwareMap.servo.get("armY");
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -59,20 +62,25 @@ public class MecanumArcadeDrive extends OpMode {
 
         drivetrain.complexDrive(gamepad1, telemetry);
 
-        if (gamepad1.a) {
-            this.clawright.setPosition(1);
-            this.clawleft.setPosition(1);
+        if (gamepad1.dpad_left) {
+            this.armX.setPosition(this.x-=0.01);
         }
-        else if (gamepad1.b) {
-            this.clawright.setPosition(-1);
-            this.clawleft.setPosition(-1);
+        else if (gamepad1.dpad_right) {
+            this.armX.setPosition(this.x+=0.01);
+        }
+        else if (gamepad1.dpad_up) {
+            this.armY.setPosition(this.y-=0.01);
+        }
+        else if (gamepad1.dpad_down) {
+            this.armY.setPosition(this.y+=0.01);
         }
 
         telemetry.addData("Main1", drivetrain.getmajorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor1", drivetrain.getMinorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor2", drivetrain.getMinorDiagonal().getMotor2().getPower());
         telemetry.addData("Main2", drivetrain.getmajorDiagonal().getMotor2().getPower());
-
+        telemetry.addData("X", this.armX.getPosition());
+        telemetry.addData("Y", this.armY.getPosition());
     }
 
     // Code to run ONCE after the driver hits STOP
