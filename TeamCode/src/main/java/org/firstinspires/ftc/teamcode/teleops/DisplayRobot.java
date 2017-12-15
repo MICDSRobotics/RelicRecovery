@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.teleops;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,13 +10,11 @@ import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.ControllerWrapper
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 
-import java.util.ResourceBundle;
-
 /**
  * @author Blake Abel, Alex Migala
  */
-@TeleOp(name="Mecanum Arcade Drive", group="Iterative Opmode")
-public class MecanumArcadeDrive extends OpMode {
+@TeleOp(name="Display Robot", group="Iterative Opmode")
+public class DisplayRobot extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     private Robot robot;
@@ -28,7 +24,7 @@ public class MecanumArcadeDrive extends OpMode {
     private MecanumDrive drivetrain;
 
     Servo armX;
-    CRServo armY; // elevator
+    Servo armY;
     double x = 0.0;
     double y = 0.0;
 
@@ -41,9 +37,8 @@ public class MecanumArcadeDrive extends OpMode {
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
         armX = hardwareMap.servo.get("armX");
-        //armY = hardwareMap.servo.get("armY");
-        //this.armX = hardwareMap.get(CRServo.class, "armX");
-        this.armY = hardwareMap.get(CRServo.class, "armY");
+        armY = hardwareMap.servo.get("armY");
+        //this.armY = hardwareMap.get(CRServo.class, "armY");
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -66,29 +61,26 @@ public class MecanumArcadeDrive extends OpMode {
         drivetrain.complexDrive(gamepad1, telemetry);
 
         if (gamepad1.dpad_left) {
-            this.armX.setPosition(this.x+=0.01);
+            this.armX.setPosition(this.x-=0.01);
         }
         else if (gamepad1.dpad_right) {
-            this.armX.setPosition(this.x-=1);
+            this.armX.setPosition(this.x+=0.01);
         }
         else if (gamepad1.dpad_up) {
-            //this.armY.setPosition(this.y-=0.01);
-            this.armY.setPower(-1);
+            this.armY.setPosition(this.y-=0.01);
+            //this.armY.setPower(-1);
         }
         else if (gamepad1.dpad_down) {
-            //this.armY.setPosition(this.y+=0.01);
-            this.armY.setPower(1);
-        }
-        else {
-            this.armY.setPower(0);
+            this.armY.setPosition(this.y+=0.01);
+            //this.armY.setPower(1);
         }
 
         telemetry.addData("Main1", drivetrain.getmajorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor1", drivetrain.getMinorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor2", drivetrain.getMinorDiagonal().getMotor2().getPower());
         telemetry.addData("Main2", drivetrain.getmajorDiagonal().getMotor2().getPower());
-        //telemetry.addData("X", this.armX.getPosition());
-        //telemetry.addData("Y", this.armY.getPosition());
+        telemetry.addData("X", this.armX.getPosition());
+        telemetry.addData("Y", this.armY.getPosition());
     }
 
     // Code to run ONCE after the driver hits STOP
