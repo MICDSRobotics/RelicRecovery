@@ -74,6 +74,10 @@ public class DisplayRobot extends OpMode {
             this.armY.setPosition(this.y+=0.01);
             //this.armY.setPower(1);
         }
+        if (gamepad1.x) {
+            robot.stopMoving();
+            drivetrain.stopMoving();
+        }
 
         telemetry.addData("Main1", drivetrain.getmajorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor1", drivetrain.getMinorDiagonal().getMotor1().getPower());
