@@ -29,16 +29,14 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.ControllerWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 
@@ -65,7 +63,7 @@ public class TestRobotHardware extends OpMode
 
     private Robot robot;
 
-    private ControllerWrapper game1;
+    private Controller p1;
 
     private MecanumDrive drivetrain;
 
@@ -82,7 +80,7 @@ public class TestRobotHardware extends OpMode
         telemetry.addData("Status", "Initialized");
 
         robot = new Robot(hardwareMap);
-        game1 = new ControllerWrapper(gamepad1);
+        p1 = new Controller(gamepad1);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
         raiser = hardwareMap.dcMotor.get("raiser");
