@@ -106,20 +106,38 @@ public class RedRight extends LinearOpMode implements Settings {
 
         // move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(forwardShort);
+        sleep(forwardShort - 200);
         this.drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1, 0);
-        sleep(sideShort);
+        sleep(sideShort - 100);
         // turn clockwise
         this.drivetrain.complexDrive(0, 0, 0.5);
-        sleep(2*rotate90);
+        sleep(4*rotate90 - 250);
         this.drivetrain.stopMoving();
+
         switch (relicRecoveryVuMark) {
-            case LEFT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 1, 0); break;
-            case CENTER: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); break;
-            case RIGHT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 1, 0); break;
-            default: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0 ); break;
+            case LEFT: telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
+                sleep((long)(sideShort));
+                break;
+            case CENTER: telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT: telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.75, 0);
+                sleep((long)(sideShort));
+                break;
+            default:
+                break;
         }
 
+        sleep(3000);
+        this.drivetrain.stopMoving();
+
         this.grabberPrimer.open();
+        sleep(1200);
+
+        // pull away
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), -1, 0);
+        sleep(750);
+        this.drivetrain.stopMoving();
     }
 }
