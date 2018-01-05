@@ -138,7 +138,7 @@ public class MainTeleOp extends OpMode
             drivetrain.complexDrive(gamepad1, telemetry);
         }
 
-        if (gamepad1.guide || gamepad2.guide) {
+        if (gamepad1.start || gamepad2.start) {
             accessControl.changeAccess();
         }
 
