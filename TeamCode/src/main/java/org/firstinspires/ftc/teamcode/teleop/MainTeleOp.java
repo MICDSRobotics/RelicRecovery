@@ -37,7 +37,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
-import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.ControllerWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
@@ -149,7 +148,7 @@ public class MainTeleOp extends OpMode
         //Raise arm while the y button is held, lower it when a it held
         if(p1.a.equals(Controller.Button.HELD)){
             raiser.setPower(1);
-        } else if (p2.b.equals(Controller.Button.HELD)) {
+        } else if (p1.b.equals(Controller.Button.HELD)) {
             raiser.setPower(-1);
         } else {
             raiser.setPower(0);
