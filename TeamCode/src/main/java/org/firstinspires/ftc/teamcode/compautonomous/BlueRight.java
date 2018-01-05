@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
@@ -29,6 +30,8 @@ public class BlueRight extends LinearOpMode implements Settings{
     private Servo armExtender;
     private Servo armRotator;
     private ColorSensorWrapper colorSensorWrapper;
+    private GrabberPrimer grabberPrimer;
+
 
     private RelicRecoveryVuMark relicRecoveryVuMark;
 
@@ -42,6 +45,8 @@ public class BlueRight extends LinearOpMode implements Settings{
         grabber = hardwareMap.servo.get("grabber");
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
+        grabberPrimer = new GrabberPrimer(this.grabber);
+
 
         //Assuming other hardware not yet on the robot
         armRotator = hardwareMap.servo.get("armRotator");
@@ -49,15 +54,11 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         armRotator.scaleRange(0.1, 0.9);
         armExtender.scaleRange(0.16, 0.75);
-        grabber.scaleRange(0.25, 1.0);
-
 
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.5);
 
-        grabber.setPosition(1.0);
-        grabber.setPosition(0.8);
-        grabber.setPosition(1.0);
+        grabberPrimer.initSystem();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
@@ -69,7 +70,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         waitForStart();
 
         //grab the block before moving off balancing stone
-        grabber.setPosition(0);
+        grabberPrimer.grab();
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
@@ -152,7 +153,12 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         sleep(2000);
 
-        grabber.setPosition(1);
+        grabberPrimer.open();
+
+        telemetry.addData("grabber", grabber.getPosition());
+        telemetry.update();
+
+        sleep(5000);
     }
 
 }

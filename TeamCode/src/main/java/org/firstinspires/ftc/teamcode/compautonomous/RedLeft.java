@@ -108,13 +108,23 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(firstStretch - 200);
         // turn counterclockwise
         this.drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0, -0.5);
-        sleep(rotate90);
+        sleep(rotate90 + 800);
         this.drivetrain.stopMoving();
+        sleep(1000);
+
         switch (relicRecoveryVuMark) {
-            case LEFT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.5, 0); break;
-            case CENTER: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0); break;
-            case RIGHT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.5, 0); break;
-            default: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0 ); break;
+            case LEFT: telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
+                sleep((long)(sideShort));
+                break;
+            case CENTER: telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT: telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.75, 0);
+                sleep((long)(sideShort));
+                break;
+            default:
+                break;
         }
 
         sleep(3000);
@@ -122,10 +132,11 @@ public class RedLeft extends LinearOpMode implements Settings {
         this.drivetrain.stopMoving();
 
         this.grabberPrimer.open();
+        sleep(1200);
 
         // pull away
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), -1, 0);
-        sleep(500);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(750);
         this.drivetrain.stopMoving();
     }
 }
