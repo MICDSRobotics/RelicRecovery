@@ -105,18 +105,27 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         // PSEUDO move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
-        sleep(firstStretch - 150);
+        sleep(firstStretch - 200);
         // turn counterclockwise
-        this.drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0, 0.5);
-        sleep(((3*rotate90) - 6));
+        this.drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0, -0.5);
+        sleep(rotate90);
         this.drivetrain.stopMoving();
         switch (relicRecoveryVuMark) {
-            case LEFT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 1, 0); break;
-            case CENTER: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); break;
-            case RIGHT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 1, 0); break;
-            default: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0 ); break;
+            case LEFT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.5, 0); break;
+            case CENTER: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0); break;
+            case RIGHT: this.drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.5, 0); break;
+            default: this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0 ); break;
         }
 
+        sleep(3000);
+
+        this.drivetrain.stopMoving();
+
         this.grabberPrimer.open();
+
+        // pull away
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), -1, 0);
+        sleep(500);
+        this.drivetrain.stopMoving();
     }
 }
