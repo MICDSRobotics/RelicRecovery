@@ -52,7 +52,7 @@ public class RedRight extends LinearOpMode implements Settings {
         armExtender = hardwareMap.servo.get("armExtender");
 
         armRotator.scaleRange(0.1, 0.9);
-        armExtender.scaleRange(0.16, 0.75);
+        armExtender.scaleRange(0.16, 0.85);
 
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.5);
@@ -126,6 +126,8 @@ public class RedRight extends LinearOpMode implements Settings {
                 sleep((long)(sideShort));
                 break;
             default:
+                drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+                sleep((long)(sideShort));
                 break;
         }
 
@@ -137,7 +139,7 @@ public class RedRight extends LinearOpMode implements Settings {
 
         // pull away
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), -1, 0);
-        sleep(750);
+        sleep(100);
         this.drivetrain.stopMoving();
     }
 }

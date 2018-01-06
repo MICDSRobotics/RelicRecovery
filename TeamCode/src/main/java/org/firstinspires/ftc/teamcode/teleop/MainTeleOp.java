@@ -104,7 +104,7 @@ public class MainTeleOp extends OpMode
         armExtender = hardwareMap.servo.get("armExtender");
 
         armRotator.scaleRange(0.1,0.9);
-        armExtender.scaleRange(0.16, 0.75);
+        armExtender.scaleRange(0.16, 0.85);
 
         raiser.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -146,33 +146,39 @@ public class MainTeleOp extends OpMode
         }
 
         //Raise arm while the y button is held, lower it when a it held
-        if(p1.a.equals(Controller.Button.HELD)){
+        if(p1.a.equals(Controller.Button.HELD) || p2.a.equals(Controller.Button.HELD)){
             raiser.setPower(1);
-        } else if (p1.b.equals(Controller.Button.HELD)) {
+        } else if (p1.b.equals(Controller.Button.HELD) || p2.b.equals(Controller.Button.HELD)) {
             raiser.setPower(-1);
         } else {
             raiser.setPower(0);
         }
 
         //Set grabber position
-        if(p1.leftBumper.equals(Controller.Button.PRESSED)){
+        if(p1.leftBumper.equals(Controller.Button.PRESSED) || p2.leftBumper.equals(Controller.Button.PRESSED)){
             grabberPrimer.open();
-        } else if (p1.rightBumper.equals(Controller.Button.PRESSED)){
+        } else if (p1.rightBumper.equals(Controller.Button.PRESSED) || p2.rightBumper.equals(Controller.Button.PRESSED)){
             grabberPrimer.grab();
         }
 
         //Set rotation servo positions
-        if(p1.dpadLeft.equals(Controller.Button.HELD)){
+        if(p1.dpadLeft.equals(Controller.Button.HELD) || p2.dpadLeft.equals(Controller.Button.HELD)){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
-        } else if (p1.dpadRight.equals(Controller.Button.HELD)){
+        } else if (p1.dpadRight.equals(Controller.Button.HELD) || p2.dpadRight.equals(Controller.Button.HELD)){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
         }
 
         //Set extender servo positions
-        if(p1.dpadUp.equals(Controller.Button.HELD)){
+        if(p1.dpadUp.equals(Controller.Button.HELD) || p2.dpadUp.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
-        } else if(p1.dpadDown.equals(Controller.Button.HELD)){
+        } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
+        }
+
+        // kill switch
+        if (p1.back.equals(Controller.Button.PRESSED) || p2.back.equals(Controller.Button.PRESSED)) {
+            this.robot.stopMoving();
+            this.drivetrain.stopMoving();
         }
 
         telemetry.addData("Grabber Position", grabber.getPosition());

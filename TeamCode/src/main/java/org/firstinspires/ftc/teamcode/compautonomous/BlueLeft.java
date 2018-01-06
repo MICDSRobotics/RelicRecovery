@@ -55,7 +55,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         grabberPrimer.initSystem();
         armRotator.scaleRange(0.1, 0.9);
-        armExtender.scaleRange(0.16, 0.75);
+        armExtender.scaleRange(0.16, 0.85);
 
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.5);
@@ -107,7 +107,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         //imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
 
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(forwardShort - 100);
+        sleep(forwardShort - 125);
 
         robot.stopMoving();
         sleep(1000);
@@ -140,11 +140,17 @@ public class BlueLeft extends LinearOpMode implements Settings{
         sleep(2000);
 
         grabberPrimer.open();
+        sleep(1000);
+
+        // pull away
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(150);
+        this.drivetrain.stopMoving();
 
         telemetry.addData("grabber", grabber.getPosition());
         telemetry.update();
 
-        sleep(5000);
+        sleep(2000);
 
     }
 
