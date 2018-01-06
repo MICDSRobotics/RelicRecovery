@@ -36,7 +36,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.ControllerWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
@@ -64,7 +65,8 @@ public class MainTeleOp extends OpMode
 
     private Robot robot;
 
-    private ControllerWrapper game1;
+    private Controller p1;
+    private Controller p2;
 
     private MecanumDrive drivetrain;
 
@@ -72,6 +74,7 @@ public class MainTeleOp extends OpMode
     private Servo grabber;
     private Servo armRotator;
     private Servo armExtender;
+    private GrabberPrimer grabberPrimer;
 
     private AccessControl accessControl = new AccessControl();
 
@@ -85,12 +88,15 @@ public class MainTeleOp extends OpMode
     public void init() {
         telemetry.addData("Status", "Initialized");
 
+        p1 = new Controller(gamepad1);
+        p2 = new Controller(gamepad2);
+
         robot = new Robot(hardwareMap);
-        game1 = new ControllerWrapper(gamepad1);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
         raiser = hardwareMap.dcMotor.get("raiser");
         grabber = hardwareMap.servo.get("grabber");
+        grabberPrimer = new GrabberPrimer(grabber);
 
         grabber.scaleRange(0.25, 1.0);
 
@@ -100,11 +106,8 @@ public class MainTeleOp extends OpMode
         armRotator.scaleRange(0.1,0.9);
         armExtender.scaleRange(0.16, 0.75);
 
-        raiser.setDirection(DcMotorSimple.Direction.REVERSE);
+        raiser.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        /* Used with motor grabber code
-        locking = false;
-        returning = false; */
     }
 
     /*
@@ -138,60 +141,37 @@ public class MainTeleOp extends OpMode
             drivetrain.complexDrive(gamepad1, telemetry);
         }
 
-        if (gamepad1.start || gamepad2.start) {
+        if (p1.start.equals(Controller.Button.PRESSED) || p2.start.equals(Controller.Button.PRESSED)) {
             accessControl.changeAccess();
         }
 
         //Raise arm while the y button is held, lower it when a it held
-        if(gamepad1.a){
+        if(p1.a.equals(Controller.Button.HELD)){
             raiser.setPower(1);
-        } else if (gamepad1.b) {
+        } else if (p1.b.equals(Controller.Button.HELD)) {
             raiser.setPower(-1);
         } else {
             raiser.setPower(0);
         }
 
-
-        if(gamepad1.left_bumper){
-            grabber.setPosition(Math.min(1, grabber.getPosition() + 0.01));
-        } else if (gamepad1.right_bumper){
-            grabber.setPosition(Math.max(0, grabber.getPosition() - 0.01));
+        //Set grabber position
+        if(p1.leftBumper.equals(Controller.Button.PRESSED)){
+            grabberPrimer.open();
+        } else if (p1.rightBumper.equals(Controller.Button.PRESSED)){
+            grabberPrimer.grab();
         }
-
-        /* Grabber code w/ lock using a motor
-        if(gamepad1.right_trigger == 0 && !locking){
-            if(gamepad1.left_bumper){
-                grabber.setPower(-0.5);
-            } else if (gamepad1.right_bumper){
-                grabber.setPower(0.5);
-            } else {
-                grabber.setPower(0);
-            }
-            returning = false;
-        } else if (gamepad1.right_trigger > 0 && !locking && !returning){
-            locking = true;
-        } else if (gamepad1.right_trigger == 1 && locking){
-            locking = false;
-            returning = true;
-        }
-
-        if(locking && gamepad1.right_trigger == 1){
-            locking = false;
-        }
-        */
-
 
         //Set rotation servo positions
-        if(gamepad1.dpad_left){
+        if(p1.dpadLeft.equals(Controller.Button.HELD)){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
-        } else if (gamepad1.dpad_right){
+        } else if (p1.dpadRight.equals(Controller.Button.HELD)){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
         }
 
         //Set extender servo positions
-        if(gamepad1.dpad_up){
+        if(p1.dpadUp.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
-        } else if(gamepad1.dpad_down){
+        } else if(p1.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
         }
 
@@ -199,6 +179,9 @@ public class MainTeleOp extends OpMode
 
         telemetry.addData("ArmRotator Position", armRotator.getPosition());
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
+
+        p1.update();
+        p2.update();
 
     }
 
