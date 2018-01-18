@@ -139,16 +139,10 @@ public class MecanumTest extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
         telemetry.addData("Access", accessControl.getTelemetryState());
 
-        if (accessControl.isG2Primary()) {
-            drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
-        }
-        else {
-            drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
-        }
+        telemetry.addData("Calibration:", imuWrapper.getIMU().getCalibrationStatus().toString());
+        telemetry.addData("Orientation:", imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).toString());
 
-        if (p1.start.equals(Controller.Button.PRESSED) || p2.start.equals(Controller.Button.PRESSED)) {
-            accessControl.changeAccess();
-        }
+        drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
 
         //Raise arm while the y button is held, lower it when a it held
         if(p1.a.equals(Controller.Button.HELD) || p2.a.equals(Controller.Button.HELD)){
