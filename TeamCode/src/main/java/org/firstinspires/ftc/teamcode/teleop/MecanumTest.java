@@ -175,9 +175,10 @@ public class MecanumTest extends OpMode
         }
 
         // recalibrate IMU
-        if (p1.back.equals(Controller.Button.PRESSED) || p2.back.equals(Controller.Button.PRESSED)) {
+        if (p1.x.equals(Controller.Button.PRESSED) || p2.x.equals(Controller.Button.PRESSED)) {
             imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
             //idk if this actually works lol
+            telemetry.addData("reset", "Trying to recalibrate");
         }
 
         telemetry.addData("Grabber Position", grabber.getPosition());
