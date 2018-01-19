@@ -112,7 +112,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         //imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
 
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(firstStretch - 150);
+        sleep(firstStretch);
 
         robot.stopMoving();
         sleep(1000);
@@ -127,7 +127,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         } */
 
         drivetrain.complexDrive(0,0,-1);
-            sleep(rotate90 - 150);
+            sleep(rotate90);
 
         robot.stopMoving();
 
@@ -150,22 +150,36 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         telemetry.update();
 
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
-
-        sleep(2000);
-
         grabberPrimer.open();
         sleep(1000);
 
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        sleep(200);
+
+        drivetrain.stopMoving();
+        sleep(200);
+
+        wiggle();
+        wiggle();
+
         // pull away
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(150);
+        sleep(200);
         this.drivetrain.stopMoving();
 
         telemetry.addData("grabber", grabber.getPosition());
         telemetry.update();
 
         sleep(2000);
+    }
+
+    public void wiggle(){
+        drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle() + 0.5, 0.75, 0);
+        sleep(150);
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        sleep(150);
+        drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle() - 0.5, 0.75, 0);
+        sleep(150);
     }
 
 }

@@ -28,6 +28,7 @@ public class TestIMUGyroscope extends OpMode {
 
     @Override
     public void loop() {
+
         robot.getDrivetrain().defaultDrive(gamepad1, telemetry);
 
         telemetry.addData("Calibration:", imuWrapper.getIMU().getCalibrationStatus().toString());
@@ -37,6 +38,7 @@ public class TestIMUGyroscope extends OpMode {
         telemetry.addData("\tFirst Angle:", imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
         telemetry.addData("\tSecond Angle:", imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).secondAngle);
         telemetry.addData("\tThird Angle:", imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).thirdAngle);
+
     }
 
     @Override
