@@ -116,7 +116,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         boolean kill = false;
 
-        switch (relicRecoveryVuMark) {
+        /*switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
                 drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
                 sleep((long)(sideShort) - 80);
@@ -138,7 +138,10 @@ public class RedLeft extends LinearOpMode implements Settings {
                 drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
                 sleep((long)(sideShort));
                 break;
-        }
+        }*/
+
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        sleep((long)(sideShort));
         this.drivetrain.stopMoving();
 
         sleep(3000);

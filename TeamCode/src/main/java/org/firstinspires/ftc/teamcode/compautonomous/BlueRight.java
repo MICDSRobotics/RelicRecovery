@@ -104,6 +104,10 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         sleep(1000);
 
+        raiser.setPower(1);
+        sleep(150);
+        raiser.setPower(0);
+
         armExtender.setPosition(1);
         armRotator.setPosition(0.5);
 
