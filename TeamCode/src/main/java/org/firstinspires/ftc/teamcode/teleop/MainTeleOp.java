@@ -42,6 +42,9 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
 
+import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller.Button.PRESSED;
+
+
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -76,10 +79,9 @@ public class MainTeleOp extends OpMode
     private Servo armExtender;
     private GrabberPrimer grabberPrimer;
 
-    private AccessControl accessControl = new AccessControl();
+    //private Servo relic;
 
-    private boolean locking;
-    private boolean returning;
+    private AccessControl accessControl = new AccessControl();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -107,6 +109,8 @@ public class MainTeleOp extends OpMode
         armExtender.scaleRange(0.16, 0.85);
 
         raiser.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        //relic = hardwareMap.servo.get("relic");
 
     }
 
@@ -141,45 +145,48 @@ public class MainTeleOp extends OpMode
             drivetrain.complexDrive(gamepad1, telemetry);
         }
 
-        if (p1.start.equals(Controller.Button.PRESSED) || p2.start.equals(Controller.Button.PRESSED)) {
+        if (p1.start == PRESSED || p2.start == PRESSED) {
             accessControl.changeAccess();
         }
 
         //Raise arm while the y button is held, lower it when a it held
-        if(p1.a.equals(Controller.Button.HELD) || p2.a.equals(Controller.Button.HELD)){
+        if(p1.a.isDown() || p2.a.isDown()){
             raiser.setPower(1);
-        } else if (p1.b.equals(Controller.Button.HELD) || p2.b.equals(Controller.Button.HELD)) {
+        } else if (p1.b.isDown() || p2.b.isDown()) {
             raiser.setPower(-1);
         } else {
             raiser.setPower(0);
         }
 
         //Set grabber position
-        if(p1.leftBumper.equals(Controller.Button.PRESSED) || p2.leftBumper.equals(Controller.Button.PRESSED)){
+        if(p1.leftBumper == PRESSED || p2.leftBumper == PRESSED){
             grabberPrimer.open();
-        } else if (p1.rightBumper.equals(Controller.Button.PRESSED) || p2.rightBumper.equals(Controller.Button.PRESSED)){
+        } else if (p1.rightBumper == PRESSED || p2.rightBumper == PRESSED){
             grabberPrimer.grab();
         }
 
         //Set rotation servo positions
-        if(p1.dpadLeft.equals(Controller.Button.HELD) || p2.dpadLeft.equals(Controller.Button.HELD)){
+        if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
-        } else if (p1.dpadRight.equals(Controller.Button.HELD) || p2.dpadRight.equals(Controller.Button.HELD)){
+        } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
         }
 
         //Set extender servo positions
-        if(p1.dpadUp.equals(Controller.Button.HELD) || p2.dpadUp.equals(Controller.Button.HELD)){
+        if(p1.dpadUp.isDown() || p2.dpadUp.isDown()){
             armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
         } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
         }
 
-        // kill switch
-        if (p1.back.equals(Controller.Button.PRESSED) || p2.back.equals(Controller.Button.PRESSED)) {
-            this.robot.stopMoving();
-            this.drivetrain.stopMoving();
-        }
+        /*
+        if (p1.x.isDown()|| p2.x.isDown()) {
+            relic.setPosition(Math.min(1, relic.getPosition() + 0.01));
+        } else if (p1.y.isDown() || p2.y.isDown()) {
+            relic.setPosition(Math.max(0, relic.getPosition() - 0.01));
+        } */
+
+        //telemetry.addData("Relic", relic.getPosition());
 
         telemetry.addData("Grabber Position", grabber.getPosition());
 
@@ -196,6 +203,7 @@ public class MainTeleOp extends OpMode
      */
     @Override
     public void stop() {
+        robot.stopMoving();
     }
 
 }
