@@ -152,15 +152,13 @@ public class BlueLeft extends LinearOpMode implements Settings{
         wiggle();
 
 
-        // pull away
+        // PULL OUT
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(150);
+        sleep(200);
         this.drivetrain.stopMoving();
 
-        telemetry.addData("grabber", grabber.getPosition());
         telemetry.update();
-
-        sleep(2000);
+        sleep(1000);
 
     }
 
