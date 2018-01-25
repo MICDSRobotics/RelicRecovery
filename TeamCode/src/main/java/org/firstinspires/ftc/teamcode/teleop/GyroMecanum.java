@@ -60,7 +60,7 @@ import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
 
 @TeleOp(name="Gyro Mecanum testing", group="Testing")
 //@Disabled
-public class MecanumTest extends OpMode
+public class GyroMecanum extends OpMode
 {
 
     private ElapsedTime runtime = new ElapsedTime();
