@@ -9,6 +9,8 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.*;
 
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 
+import java.sql.Time;
+
 /**
  * Created by amigala on 1/22/2018.
  */
@@ -26,9 +28,17 @@ public class AutonomousTimeTesting extends LinearOpMode {
         waitForStart();
 
         // begin moving
-        this.drive.complexDrive(0, 1, 0);
+        //this.drive.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+
+        double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         telemetry.addData("Voltage", hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage());
-        sleep((long)TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 100));
+        telemetry.addData("Output", TimeOffsetVoltage.calculateDistance(voltage, 100));
+        telemetry.addData("Formula", TimeOffsetVoltage.calculateDistanceVoltage(voltage));
+
+        //sleep((long)TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 100));
+
         this.drive.stopMoving();
+        telemetry.update();
+        sleep(5000);
     }
 }
