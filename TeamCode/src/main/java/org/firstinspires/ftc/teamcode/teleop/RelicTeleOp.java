@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -59,9 +60,9 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Drive Robot", group="Competition OpModes")
+@TeleOp(name="Relic Grabbing", group="YUH YUH")
 //@Disabled
-public class MainTeleOp extends OpMode
+public class RelicTeleOp extends OpMode
 {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -78,6 +79,8 @@ public class MainTeleOp extends OpMode
     private Servo armRotator;
     private Servo armExtender;
     private GrabberPrimer grabberPrimer;
+
+    private CRServo relic;
 
     private AccessControl accessControl = new AccessControl();
 
@@ -107,6 +110,8 @@ public class MainTeleOp extends OpMode
         armExtender.scaleRange(0.16, 0.85);
 
         raiser.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        relic = hardwareMap.crservo.get("relic");
 
     }
 
@@ -174,6 +179,16 @@ public class MainTeleOp extends OpMode
         } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
         }
+
+        if (p1.x.isDown()|| p2.x.isDown()) {
+            relic.setPower(1);
+        } else if (p1.y.isDown() || p2.y.isDown()) {
+            relic.setPower(-1);
+        } else {
+            relic.setPower(0);
+        }
+
+        telemetry.addData("Relic", relic.getPower());
 
         telemetry.addData("Grabber Position", grabber.getPosition());
 
