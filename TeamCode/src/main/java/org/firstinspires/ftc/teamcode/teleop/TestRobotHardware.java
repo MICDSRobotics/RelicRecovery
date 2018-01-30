@@ -119,7 +119,7 @@ public class TestRobotHardware extends OpMode
 
         telemetry.addData("Status", "Running: " + runtime.toString());
 
-        drivetrain.complexDrive(gamepad1, telemetry);
+        drivetrain.defaultDrive(gamepad1, telemetry);
 
         //Raise arm while the y button is held, lower it when a it held
         if(gamepad1.y){
@@ -163,7 +163,6 @@ public class TestRobotHardware extends OpMode
     @Override
     public void stop() {
         robot.stopMoving();
-        drivetrain.stopMoving();
     }
 
 }

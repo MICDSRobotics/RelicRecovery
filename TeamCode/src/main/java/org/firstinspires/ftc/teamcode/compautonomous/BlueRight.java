@@ -166,15 +166,32 @@ public class BlueRight extends LinearOpMode implements Settings{
         wiggle();
         wiggle();
 
-        // pull away
+        // PULL OUT
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(200);
+        sleep(100);
         this.drivetrain.stopMoving();
+        sleep(100);
+        switch (relicRecoveryVuMark) {
+            case LEFT: this.drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1, 0);
+                break;
+            case CENTER: this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+                break;
+            case RIGHT: this.drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 1, 0);
+                break;
+            default: this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+                break;
+        }
+        sleep(100);
+        this.drivetrain.stopMoving();
+        sleep(100);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(100);
+        this.drivetrain.stopMoving();
+        sleep(100);
 
-        telemetry.addData("grabber", grabber.getPosition());
         telemetry.update();
 
-        sleep(2000);
+        sleep(1000);
     }
 
     public void wiggle(){

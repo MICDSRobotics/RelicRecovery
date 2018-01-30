@@ -36,14 +36,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
-
-import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller.Button.PRESSED;
-
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -59,9 +58,9 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Drive Robot", group="Competition OpModes")
+@TeleOp(name="Gyro Mecanum testing", group="Testing")
 //@Disabled
-public class MainTeleOp extends OpMode
+public class GyroMecanum extends OpMode
 {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -80,6 +79,11 @@ public class MainTeleOp extends OpMode
     private GrabberPrimer grabberPrimer;
 
     private AccessControl accessControl = new AccessControl();
+
+    private boolean locking;
+    private boolean returning;
+
+    private IMUWrapper imuWrapper;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -108,6 +112,7 @@ public class MainTeleOp extends OpMode
 
         raiser.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        imuWrapper = new IMUWrapper(hardwareMap);
     }
 
     /*
@@ -134,45 +139,46 @@ public class MainTeleOp extends OpMode
         telemetry.addData("Status", "Running: " + runtime.toString());
         telemetry.addData("Access", accessControl.getTelemetryState());
 
-        if (accessControl.isG2Primary()) {
-            drivetrain.complexDrive(gamepad2, telemetry);
-        }
-        else {
-            drivetrain.complexDrive(gamepad1, telemetry);
-        }
+        telemetry.addData("Calibration:", imuWrapper.getIMU().getCalibrationStatus().toString());
+        telemetry.addData("Orientation:", imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).toString());
 
-        if (p1.start == PRESSED || p2.start == PRESSED) {
-            accessControl.changeAccess();
-        }
+        drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
 
         //Raise arm while the y button is held, lower it when a it held
-        if(p1.a.isDown() || p2.a.isDown()){
+        if(p1.a.equals(Controller.Button.HELD) || p2.a.equals(Controller.Button.HELD)){
             raiser.setPower(1);
-        } else if (p1.b.isDown() || p2.b.isDown()) {
+        } else if (p1.b.equals(Controller.Button.HELD) || p2.b.equals(Controller.Button.HELD)) {
             raiser.setPower(-1);
         } else {
             raiser.setPower(0);
         }
 
         //Set grabber position
-        if(p1.leftBumper == PRESSED || p2.leftBumper == PRESSED){
+        if(p1.leftBumper.equals(Controller.Button.PRESSED) || p2.leftBumper.equals(Controller.Button.PRESSED)){
             grabberPrimer.open();
-        } else if (p1.rightBumper == PRESSED || p2.rightBumper == PRESSED){
+        } else if (p1.rightBumper.equals(Controller.Button.PRESSED) || p2.rightBumper.equals(Controller.Button.PRESSED)){
             grabberPrimer.grab();
         }
 
         //Set rotation servo positions
-        if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
+        if(p1.dpadLeft.equals(Controller.Button.HELD) || p2.dpadLeft.equals(Controller.Button.HELD)){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
-        } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
+        } else if (p1.dpadRight.equals(Controller.Button.HELD) || p2.dpadRight.equals(Controller.Button.HELD)){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
         }
 
         //Set extender servo positions
-        if(p1.dpadUp.isDown() || p2.dpadUp.isDown()){
+        if(p1.dpadUp.equals(Controller.Button.HELD) || p2.dpadUp.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
         } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
+        }
+
+        // recalibrate IMU
+        if (p1.x.equals(Controller.Button.PRESSED) || p2.x.equals(Controller.Button.PRESSED)) {
+            imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
+            //idk if this actually works lol
+            telemetry.addData("reset", "Trying to recalibrate");
         }
 
         telemetry.addData("Grabber Position", grabber.getPosition());
@@ -190,7 +196,6 @@ public class MainTeleOp extends OpMode
      */
     @Override
     public void stop() {
-        robot.stopMoving();
     }
 
 }
