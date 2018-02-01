@@ -116,6 +116,12 @@ public class BlueLeft extends LinearOpMode implements Settings{
         robot.stopMoving();
         sleep(1000);
 
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(100);
+
+        robot.stopMoving();
+        sleep(1000);
+
         drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1,0);
         sleep(sideShort);
 
