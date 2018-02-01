@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.gyroautos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
  */
 
 @Autonomous(name="Gyro Red Left", group="gyro")
+@Disabled
 public class GyroRL extends LinearOpMode implements Settings {
 
     private Robot robot;
