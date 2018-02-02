@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
@@ -107,7 +108,13 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         // move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
-        sleep(firstStretch - 200);
+        // 78cm
+        double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
+        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 78));
+        this.drivetrain.stopMoving();
+        sleep(100);
+
+
         // turn counterclockwise
         this.drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0, -0.5);
         sleep(rotate90 + 300); // + 800
