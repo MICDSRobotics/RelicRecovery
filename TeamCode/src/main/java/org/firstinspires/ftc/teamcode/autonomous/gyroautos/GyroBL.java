@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
  */
 
 @Autonomous(name="Gyro Blue Left", group="gyro")
-@Disabled
+//@Disabled
 public class GyroBL extends LinearOpMode implements Settings{
 
     private Robot robot;
@@ -123,6 +123,12 @@ public class GyroBL extends LinearOpMode implements Settings{
         setAngle(imuWrapper, drivetrain, 0);
         sleep(1000);
 
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(100);
+
+        robot.stopMoving();
+        sleep(1000);
+
         drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1,0);
         sleep(sideShort);
 
@@ -134,13 +140,13 @@ public class GyroBL extends LinearOpMode implements Settings{
 
         switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             case CENTER: telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             default:
@@ -185,11 +191,11 @@ public class GyroBL extends LinearOpMode implements Settings{
 
         float heading = imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle;
 
-        while (!(heading > angle - 0.025 && heading < angle + 0.025 )){
+        while (!(heading > angle - 0.1 && heading < angle + 0.1 )){
             if (heading > angle) {
-                drivetrain.complexDrive(0, 0, 0.5);
+                drivetrain.complexDrive(0, 0, 0.2);
             } else {
-                drivetrain.complexDrive(0, 0, -0.5);
+                drivetrain.complexDrive(0, 0, -0.2);
             }
             heading = imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle;
         }

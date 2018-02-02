@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
  */
 
 @Autonomous(name="Gyro Red Left", group="gyro")
-@Disabled
+//@Disabled
 public class GyroRL extends LinearOpMode implements Settings {
 
     private Robot robot;
@@ -163,11 +163,11 @@ public class GyroRL extends LinearOpMode implements Settings {
 
         float heading = imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle;
 
-        while (!(heading > angle - 0.025 && heading < angle + 0.025 )){
+        while (!(heading > angle - 0.1 && heading < angle + 0.1 )){
             if (heading > angle) {
-                drivetrain.complexDrive(0, 0, 0.5);
+                drivetrain.complexDrive(0, 0, 0.2);
             } else {
-                drivetrain.complexDrive(0, 0, -0.5);
+                drivetrain.complexDrive(0, 0, -0.2);
             }
             heading = imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle;
         }
