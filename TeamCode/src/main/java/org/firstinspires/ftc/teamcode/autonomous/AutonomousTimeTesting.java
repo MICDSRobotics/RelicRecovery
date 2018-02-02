@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -18,6 +19,7 @@ import java.sql.Time;
  */
 
 @Autonomous(name = "TimeTesting", group = "Testing")
+@Disabled
 public class AutonomousTimeTesting extends LinearOpMode {
     private MecanumDrive drive;
     private Robot robot;
@@ -35,13 +37,13 @@ public class AutonomousTimeTesting extends LinearOpMode {
 
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         telemetry.addData("Voltage", hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage());
-        telemetry.addData("Output", TimeOffsetVoltage.calculateDistance(voltage, 100, 1));
+        telemetry.addData("Output", TimeOffsetVoltage.calculateDistance(voltage, 100));
 
         telemetry.update();
 
         this.drive.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
 
-        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 100, 1));
+        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 100));
 
         //sleep((long)TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 100));
 
