@@ -106,6 +106,10 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
 
+        this.raiser.setPower(1);
+        sleep(500);
+        this.raiser.setPower(0);
+
         // move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
         // 78cm
@@ -123,30 +127,50 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         boolean kill = false;
 
-        /*switch (relicRecoveryVuMark) {
+
+        // START
+        switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
                 drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
-                sleep((long)(sideShort) - 80);
-                drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
                 sleep((long)(sideShort));
                 break;
             case CENTER: telemetry.addData("Column", "Putting it in the center");
-                drivetrain.complexDrive(0, 0.75, 0);
-                sleep((long)(sideShort));
-                drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
-                sleep((long)(sideShort));
                 break;
             case RIGHT: telemetry.addData("Column", "Putting it in the right");
                 drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.75, 0);
                 sleep((long)(sideShort));
                 break;
             default:
-                kill = true;
-                drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
-                sleep((long)(sideShort));
                 break;
-        }*/
+        }
 
+        telemetry.update();
+
+        grabberPrimer.open();
+        sleep(1000);
+
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        sleep(200);
+
+        drivetrain.stopMoving();
+        sleep(200);
+
+        wiggle();
+        wiggle();
+
+
+        // PULL OUT
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(200);
+        this.drivetrain.stopMoving();
+
+        telemetry.update();
+        sleep(1000);
+        // END
+
+
+
+        /* DEFAULT 'RAM' CODE
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
         sleep((long)(sideShort));
         this.drivetrain.stopMoving();
@@ -161,6 +185,15 @@ public class RedLeft extends LinearOpMode implements Settings {
         // pull away
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(100);
-        this.drivetrain.stopMoving();
+        this.drivetrain.stopMoving();*/
+    }
+
+    public void wiggle(){
+        drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.75, 0);
+        sleep(150);
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        sleep(150);
+        drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
+        sleep(150);
     }
 }
