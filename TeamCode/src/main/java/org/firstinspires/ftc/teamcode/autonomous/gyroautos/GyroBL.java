@@ -130,7 +130,7 @@ public class GyroBL extends LinearOpMode implements Settings{
         sleep(1000);
 
         drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1,0);
-        sleep(sideShort);
+        sleep(sideShort + 100);
 
         robot.stopMoving();
         sleep(1000);
