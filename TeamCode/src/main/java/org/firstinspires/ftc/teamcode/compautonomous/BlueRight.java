@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
@@ -121,31 +122,19 @@ public class BlueRight extends LinearOpMode implements Settings{
         robot.stopMoving();
         sleep(1000);
 
-        //telemetry.addData("FirstAngle", imuWrapper.getOrientation().firstAngle);
-        //telemetry.update();
-
-        /*while (imuWrapper.getOrientation().firstAngle < Math.PI / 2) {
-            drivetrain.complexDrive(0, 0, -1);
-            telemetry.addData("FirstAngle", imuWrapper.getOrientation().firstAngle);
-            telemetry.update();
-        } */
-
-        drivetrain.complexDrive(0,0,-1);
-            sleep(rotate90);
-
-        robot.stopMoving();
-
-        sleep(3000);
+        //Face cryptobox
+        drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
+        sleep(1000);
 
         switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             case CENTER: telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             default:
