@@ -114,7 +114,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
         // 78cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 78));
+        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 170));
         this.drivetrain.stopMoving();
         sleep(100);
 
@@ -131,13 +131,13 @@ public class RedLeft extends LinearOpMode implements Settings {
         // START
         switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             case CENTER: telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             default:
