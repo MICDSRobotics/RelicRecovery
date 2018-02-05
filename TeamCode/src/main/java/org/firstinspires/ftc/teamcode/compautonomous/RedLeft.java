@@ -114,7 +114,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
         // 78cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 170));
+        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 158));
         this.drivetrain.stopMoving();
         sleep(100);
 

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
@@ -104,46 +105,78 @@ public class RedRight extends LinearOpMode implements Settings {
 
         imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
 
+        this.raiser.setPower(1);
+        sleep(1000);
+        this.raiser.setPower(0);
+
         // move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(forwardShort - 200);
+        // 115cm
+        double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
+        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 115));
+        this.drivetrain.stopMoving();
+        sleep(100);
+
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(100);
+        this.drivetrain.stopMoving();
+        sleep(1000);
+
+
         this.drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1, 0);
         sleep(sideShort - 100);
-        // turn clockwise
-        this.drivetrain.complexDrive(0, 0, 0.5);
-        sleep(4*rotate90 - 250);
+
+        //Face cryptobox
+        this.drivetrain.setAngle(imuWrapper, (float)Math.PI);
+        sleep(1000);
         this.drivetrain.stopMoving();
 
-        /*switch (relicRecoveryVuMark) {
+        // START
+        switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             case CENTER: telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.75, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
                 sleep((long)(sideShort));
                 break;
             default:
-                drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
-                sleep((long)(sideShort));
                 break;
-        }*/
+        }
 
+        telemetry.update();
+
+        grabberPrimer.open();
+        sleep(1000);
+
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        sleep(200);
+
+        drivetrain.stopMoving();
+        sleep(200);
+
+        wiggle();
+        wiggle();
+
+        // PULL OUT
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(200);
+        this.drivetrain.stopMoving();
+
+        telemetry.update();
+        sleep(1000);
+        // END
+    }
+
+    public void wiggle(){
+        drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.75, 0);
+        sleep(150);
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
-        sleep((long)(sideShort));
-        this.drivetrain.stopMoving();
-
-        sleep(3000);
-        this.drivetrain.stopMoving();
-
-        this.grabberPrimer.open();
-        sleep(1200);
-
-        // pull away
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), -1, 0);
-        sleep(250);
-        this.drivetrain.stopMoving();
+        sleep(150);
+        drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
+        sleep(150);
     }
 }
