@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
@@ -116,8 +117,13 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         //imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
 
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(firstStretch);
+        // move backwards and slam into the wall
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); // move backwards
+        // 78cm
+        double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
+        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 170));
+        this.drivetrain.stopMoving();
+        sleep(100);
 
         robot.stopMoving();
         sleep(1000);
@@ -174,7 +180,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         this.drivetrain.stopMoving();
         sleep(100);
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(100);
+        sleep(50);
         this.drivetrain.stopMoving();
         sleep(100);
 
