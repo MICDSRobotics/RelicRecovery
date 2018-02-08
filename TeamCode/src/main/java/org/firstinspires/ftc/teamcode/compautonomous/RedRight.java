@@ -118,13 +118,13 @@ public class RedRight extends LinearOpMode implements Settings {
         sleep(100);
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(100);
+        sleep(150);
         this.drivetrain.stopMoving();
         sleep(1000);
 
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1, 0);
-        sleep(sideShort - 100);
+        sleep(sideShort + 100);
 
         //Face cryptobox
         this.drivetrain.setAngle(imuWrapper, (float)Math.PI);

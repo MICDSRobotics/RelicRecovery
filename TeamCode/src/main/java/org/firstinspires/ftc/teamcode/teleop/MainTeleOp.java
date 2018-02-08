@@ -58,6 +58,8 @@ public class MainTeleOp extends OpMode
 
     private ElapsedTime runtime = new ElapsedTime();
 
+    private boolean lowSpeed = false;
+
     private Robot robot;
 
     private Controller p1;
@@ -127,14 +129,29 @@ public class MainTeleOp extends OpMode
         telemetry.addData("Access", accessControl.getTelemetryState());
 
         if (accessControl.isG2Primary()) {
-            drivetrain.complexDrive(gamepad2, telemetry);
+            if (this.lowSpeed) {
+                drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+            }
+            else {
+                drivetrain.complexDrive(gamepad2, telemetry);
+            }
         }
         else {
-            drivetrain.complexDrive(gamepad1, telemetry);
+            if (this.lowSpeed) {
+                drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+            }
+            else {
+                drivetrain.complexDrive(gamepad1, telemetry);
+            }
         }
 
         if (p1.start == PRESSED || p2.start == PRESSED) {
             accessControl.changeAccess();
+        }
+
+        if (p1.x == PRESSED || p2.x == PRESSED) {
+            this.lowSpeed = !this.lowSpeed;
+            telemetry.addData("Switching", "YEET");
         }
 
         //Raise arm while the y button is held, lower it when a it held
@@ -171,6 +188,10 @@ public class MainTeleOp extends OpMode
 
         telemetry.addData("ArmRotator Position", armRotator.getPosition());
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
+
+        telemetry.addData("Slowmode", this.lowSpeed);
+        telemetry.addData("Baby got Bacc?", p1.x);
+        telemetry.addData("Fr thooo", p1.x);
 
         p1.update();
         p2.update();
