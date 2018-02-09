@@ -57,7 +57,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         grabberPrimer.initSystem();
         armRotator.scaleRange(0.1, 0.9);
-        armExtender.scaleRange(0.16, 0.85);
+        armExtender.scaleRange(0.16, 0.9);
 
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.5);
@@ -144,13 +144,13 @@ public class BlueLeft extends LinearOpMode implements Settings{
         switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
                 drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(sideShort));
+                sleep((long)(1100 + sideShort));
                 break;
             case CENTER: telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT: telemetry.addData("Column", "Putting it in the right");
                 drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(sideShort));
+                sleep((long)(1100 + sideShort));
                 break;
             default:
                 break;
@@ -159,6 +159,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         telemetry.update();
 
         grabberPrimer.open();
+        drivetrain.stopMoving();
         sleep(1000);
 
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
