@@ -174,7 +174,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         // PULL OUT
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(200);
+        sleep(150);
         this.drivetrain.stopMoving();
 
         telemetry.update();

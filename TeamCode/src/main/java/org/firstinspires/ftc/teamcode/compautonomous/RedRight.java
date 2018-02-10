@@ -118,7 +118,7 @@ public class RedRight extends LinearOpMode implements Settings {
         sleep(100);
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(150);
+        sleep(75);
         this.drivetrain.stopMoving();
         sleep(1000);
 
