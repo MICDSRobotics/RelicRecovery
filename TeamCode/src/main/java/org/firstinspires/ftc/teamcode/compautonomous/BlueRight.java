@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.compautonomous;
 
+import android.media.MediaActionSound;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,6 +32,7 @@ public class BlueRight extends LinearOpMode implements Settings{
     private MecanumDrive drivetrain;
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
+    private double voltage;
 
     private Servo armExtender;
     private Servo armRotator;
@@ -120,7 +123,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         // move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); // move backwards
         // 78cm
-        double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
+        this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 170));
         this.drivetrain.stopMoving();
         sleep(100);
@@ -133,19 +136,25 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         switch (relicRecoveryVuMark) {
-            case LEFT: telemetry.addData("Column", "Putting it in the left");
+            case LEFT:
+                telemetry.addData("Column", "Putting it in the left");
                 drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
+                sleep((long) (1100 + sideShort));
                 break;
-            case CENTER: telemetry.addData("Column", "Putting it in the center");
+            case CENTER:
+                telemetry.addData("Column", "Putting it in the center");
                 break;
-            case RIGHT: telemetry.addData("Column", "Putting it in the right");
+            case RIGHT:
+                telemetry.addData("Column", "Putting it in the right");
                 drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
+                sleep((long) (1100 + sideShort));
                 break;
             default:
                 break;
         }
+
+        // disable vuforia so we can enable the dogecv
+        this.vuforiaWrapper = null;
 
         telemetry.update();
 
@@ -181,4 +190,35 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(150);
     }
 
+    public void attemptToGetMultiBlock() {
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep((long)TimeOffsetVoltage.calculateDistance(this.voltage, 60));
+        this.drivetrain.stopMoving();
+        sleep(1000);
+        // spin around 180 degrees using the gyro
+        this.drivetrain.setAngle(this.imuWrapper, (float)(Math.PI));
+        // briefly ram into the block pile
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(1000);
+        this.drivetrain.stopMoving();
+        sleep(1000);
+        // attempt to pick up a block
+        this.grabberPrimer.grab();
+        sleep(1000);
+        wiggle();
+        this.grabberPrimer.open();
+        sleep(500); // may need to wait another 500ms
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(750);
+        this.drivetrain.stopMoving();
+        sleep(800);
+        this.grabberPrimer.grab();
+        sleep(800);
+        this.raiser.setPower(1);
+        sleep(500);
+        this.raiser.setPower(0);
+        sleep(800);
+        // back up and then go back
+        // problem: we need a way to find out where we are when we get the block
+    }
 }
