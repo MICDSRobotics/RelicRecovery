@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode.compautonomous;
 
-import android.media.MediaActionSound;
-
-import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
@@ -181,7 +176,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         this.attemptToGetMultiBlock();
-        
+
         this.drivetrain.stopMoving();
         sleep(1000);
 
