@@ -24,4 +24,10 @@ public interface Settings {
     int rotate90 = 549; //2196 for a full rotation
     double slamIntoWallSpeed = 0.4;
     */
+
+    /**
+     * These values are used for DogeCV
+     */
+
+    int distanceToCenter = 1; // this is the threshold for how much the robot should move to get to the center column
 }

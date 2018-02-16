@@ -34,7 +34,6 @@ public class BlueRight extends LinearOpMode implements Settings{
     private MecanumDrive drivetrain;
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
-    private CryptoboxDetector cryptoboxDetector;
 
     private double voltage;
 
@@ -157,13 +156,6 @@ public class BlueRight extends LinearOpMode implements Settings{
                 break;
         }
 
-        // disable vuforia so we can enable the dogecv
-        this.vuforiaWrapper = null;
-        cryptoboxDetector = new CryptoboxDetector();
-        cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
-        cryptoboxDetector.rotateMat = false; // may need to change
-        cryptoboxDetector.enable();
-
         telemetry.update();
 
         grabberPrimer.open();
@@ -187,6 +179,26 @@ public class BlueRight extends LinearOpMode implements Settings{
         telemetry.update();
 
         sleep(1000);
+
+        this.attemptToGetMultiBlock();
+        
+        this.drivetrain.stopMoving();
+        sleep(1000);
+
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                // attempt to place right
+                break;
+            case CENTER:
+                // attempt to place on left side
+                break;
+            case RIGHT:
+                // attempt to place on left
+                break;
+            default:
+                // just go into the center on the off-chance that the robot couldn't find the vumark that we needed
+                break;
+        }
     }
 
     public void wiggle(){
