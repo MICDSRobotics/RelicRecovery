@@ -110,9 +110,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         sleep(1000);
 
-        //imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
-
-        // move backwards and slam into the wall
+        // STEP 3: MOVE OFF BALANCING STONE
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
@@ -132,6 +130,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         robot.stopMoving();
         sleep(1000);
 
+        //STEP 4: MOVE TOWARDS CRYPTOBOX
         drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1,0);
         sleep(sideShort + 100);
 
@@ -141,6 +140,8 @@ public class BlueLeft extends LinearOpMode implements Settings{
         drivetrain.setAngle(imuWrapper, 0);
         sleep(1000);
 
+        //STEP 5: SCORE GLYPH INTO CORRECT COLUMN
+        //Move to sides according to cryptobox key
         switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
                 drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
@@ -171,8 +172,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         wiggle();
         wiggle();
 
-
-        // PULL OUT
+        // Move awy from glyph so it counts
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(150);
         this.drivetrain.stopMoving();
@@ -182,6 +182,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
     }
 
+    //Method to help guard against glyph getting stuck between columns
     public void wiggle(){
         drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.75, 0);
         sleep(150);
