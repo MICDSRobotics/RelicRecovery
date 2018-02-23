@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.ControllerWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 
@@ -19,7 +19,7 @@ public class DisplayRobot extends OpMode {
 
     private Robot robot;
   
-    private ControllerWrapper game1;
+    private Controller game1;
 
     private MecanumDrive drivetrain;
 
@@ -33,7 +33,7 @@ public class DisplayRobot extends OpMode {
         telemetry.addData("Status", "Initialized");
 
         robot = new Robot(hardwareMap);
-        game1 = new ControllerWrapper(gamepad1);
+        game1 = new Controller(gamepad1);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
         armX = hardwareMap.servo.get("armX");
@@ -79,10 +79,10 @@ public class DisplayRobot extends OpMode {
             drivetrain.stopMoving();
         }
 
-        telemetry.addData("Main1", drivetrain.getmajorDiagonal().getMotor1().getPower());
+        telemetry.addData("Main1", drivetrain.getMajorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor1", drivetrain.getMinorDiagonal().getMotor1().getPower());
         telemetry.addData("Minor2", drivetrain.getMinorDiagonal().getMotor2().getPower());
-        telemetry.addData("Main2", drivetrain.getmajorDiagonal().getMotor2().getPower());
+        telemetry.addData("Main2", drivetrain.getMajorDiagonal().getMotor2().getPower());
         telemetry.addData("X", this.armX.getPosition());
         telemetry.addData("Y", this.armY.getPosition());
     }
