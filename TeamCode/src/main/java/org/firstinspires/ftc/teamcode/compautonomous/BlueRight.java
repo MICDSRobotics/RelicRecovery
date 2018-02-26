@@ -176,24 +176,33 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         this.attemptToGetMultiBlock();
+        this.moveAwayFromPit();
+        this.placeMultiBlock();
+
+        telemetry.update();
+
+        grabberPrimer.open();
+        drivetrain.stopMoving();
+        sleep(1000);
+
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        sleep(200);
+
+        drivetrain.stopMoving();
+        sleep(200);
+
+        wiggle();
+        wiggle();
+
+        // PULL OUT (Once)
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(150);
+        this.drivetrain.stopMoving();
+
+        telemetry.update();
 
         this.drivetrain.stopMoving();
         sleep(1000);
-
-        switch (relicRecoveryVuMark) {
-            case LEFT:
-                // attempt to place right
-                break;
-            case CENTER:
-                // attempt to place on left side
-                break;
-            case RIGHT:
-                // attempt to place on left
-                break;
-            default:
-                // just go into the center on the off-chance that the robot couldn't find the vumark that we needed
-                break;
-        }
     }
 
     public void wiggle(){
@@ -206,34 +215,86 @@ public class BlueRight extends LinearOpMode implements Settings{
     }
 
     public void attemptToGetMultiBlock() {
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep((long)TimeOffsetVoltage.calculateDistance(this.voltage, 60));
-        this.drivetrain.stopMoving();
-        sleep(1000);
-        // spin around 180 degrees using the gyro
-        this.drivetrain.setAngle(this.imuWrapper, (float)(Math.PI));
-        // briefly ram into the block pile
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(1000);
-        this.drivetrain.stopMoving();
-        sleep(1000);
-        // attempt to pick up a block
-        this.grabberPrimer.grab();
-        sleep(1000);
-        wiggle();
-        this.grabberPrimer.open();
-        sleep(500); // may need to wait another 500ms
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(750);
-        this.drivetrain.stopMoving();
-        sleep(800);
-        this.grabberPrimer.grab();
-        sleep(800);
-        this.raiser.setPower(1);
+        this.drivetrain.setAngle(imuWrapper, (float)(Math.PI / 2));
         sleep(500);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 40));
+        this.drivetrain.stopMoving();
+        sleep(1000);
+
+        // spin around 180 degrees using the gyro
+        this.drivetrain.setAngle(this.imuWrapper, (float)(-Math.PI / 2));
+        sleep(500);
+
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 20));
+        this.drivetrain.stopMoving();
+        sleep(500);
+
+        this.grabberPrimer.grab();
+        sleep(750);
+
+        this.raiser.setPower(1);
+        sleep(200);
+
         this.raiser.setPower(0);
-        sleep(800);
-        // back up and then go back
-        // problem: we need a way to find out where we are when we get the block
+        sleep(500);
+    }
+
+    public void moveAwayFromPit() {
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 20));
+        sleep(500);
+        this.drivetrain.stopMoving();
+
+        this.drivetrain.setAngle(imuWrapper, (float)(Math.PI / 2));
+        sleep(500);
+        this.drivetrain.stopMoving();
+
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 40));
+        sleep(500);
+        this.drivetrain.stopMoving();
+    }
+
+    public void placeMultiBlock() {
+        /*
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            case CENTER:
+                telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT:
+                telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            default:
+                break;
+        }
+         */
+
+        switch (relicRecoveryVuMark) {
+            case LEFT: // maybe use the 'right' case?
+                telemetry.addData("Column", "Putting it in the center");
+                this.drivetrain.setAngle(imuWrapper, (float)MecanumDrive.Direction.UP.angle());
+                break;
+            case CENTER:
+                telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            case RIGHT:
+                telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            default:
+                break;
+        }
     }
 }
