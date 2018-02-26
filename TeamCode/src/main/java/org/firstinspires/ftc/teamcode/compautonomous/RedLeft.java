@@ -170,7 +170,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         sleep(1000);
 
-        //Move back to center of cryptobox tabe (if necessary)
+        //Move back to center of cryptobox tape (if necessary)
         // START
         switch (relicRecoveryVuMark) {
             case LEFT:
