@@ -218,7 +218,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         this.drivetrain.setAngle(imuWrapper, (float)(Math.PI / 2));
         sleep(500);
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 40));
+        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 20));
         this.drivetrain.stopMoving();
         sleep(1000);
 
@@ -226,8 +226,8 @@ public class BlueRight extends LinearOpMode implements Settings{
         this.drivetrain.setAngle(this.imuWrapper, (float)(-Math.PI / 2));
         sleep(500);
 
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 20));
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(750);
         this.drivetrain.stopMoving();
         sleep(500);
 
@@ -243,7 +243,7 @@ public class BlueRight extends LinearOpMode implements Settings{
 
     public void moveAwayFromPit() {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 20));
+        sleep(750);
         sleep(500);
         this.drivetrain.stopMoving();
 
@@ -252,7 +252,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         this.drivetrain.stopMoving();
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 40));
+        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 30));
         sleep(500);
         this.drivetrain.stopMoving();
     }

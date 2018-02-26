@@ -83,10 +83,10 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         //STEP 2: Hitting the jewel
         armExtender.setPosition(0); //servo in 'out' position
-
-        sleep(2000);
+        sleep(1000);
 
         telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
+
         //Checks that blue jewel is closer towards the cryptoboxes (assuming color sensor is facing forward
         if (Math.abs(colorSensorWrapper.getRGBValues()[2] - colorSensorWrapper.getRGBValues()[0]) < 30) {
             telemetry.addData("Jewels", "Too close.");
@@ -98,39 +98,30 @@ public class RedLeft extends LinearOpMode implements Settings {
             telemetry.addData("Jewels", "Red Team!");
         }
         telemetry.update();
-
-        sleep(1000);
+        sleep(500);
 
         armExtender.setPosition(1);
         armRotator.setPosition(0.5);
 
-        sleep(1000);
-
-        //imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
+        sleep(500);
 
         this.raiser.setPower(1);
         sleep(500);
         this.raiser.setPower(0);
 
-        // move backwards and slam into the wall
+        // Move backwards off balancing stone
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
-        // 78cm
+        // 160cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 160));
         this.drivetrain.stopMoving();
         sleep(100);
 
-
-        /* turn counterclockwise
-        this.drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0, -0.5);
-        sleep(rotate90 + 300); // + 800
-        this.drivetrain.stopMoving();
-        sleep(1000); */
-
+        //Turn 90 degrees to face cryptobox
         drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
         sleep(1000);
 
-        // START
+        // Move in front of correct cryptobox column
         switch (relicRecoveryVuMark) {
             case LEFT: telemetry.addData("Column", "Putting it in the left");
                 drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
@@ -150,7 +141,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         grabberPrimer.open();
         drivetrain.stopMoving();
-        sleep(1000);
+        sleep(500);
 
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
         sleep(200);
@@ -168,7 +159,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         telemetry.update();
 
-        sleep(1000);
+        sleep(500);
 
         //Move back to center of cryptobox tape (if necessary)
         // START
@@ -187,10 +178,14 @@ public class RedLeft extends LinearOpMode implements Settings {
                 break;
         }
 
+        raiser.setPower(-1);
+        sleep(450);
+        raiser.setPower(0);
+
         this.attemptToGetMultiBlock();
 
         this.drivetrain.stopMoving();
-        sleep(1000);
+        sleep(200);
 
         switch (relicRecoveryVuMark) {
             case LEFT:
@@ -207,7 +202,6 @@ public class RedLeft extends LinearOpMode implements Settings {
                 break;
         }
 
-
     }
 
     public void wiggle(){
@@ -220,34 +214,32 @@ public class RedLeft extends LinearOpMode implements Settings {
     }
 
     public void attemptToGetMultiBlock() {
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep((long)TimeOffsetVoltage.calculateDistance(this.voltage, 60));
-        this.drivetrain.stopMoving();
-        sleep(1000);
-        // spin around 180 degrees using the gyro
-        this.drivetrain.setAngle(this.imuWrapper, (float)(Math.PI));
+        // Face glyph horde using the gyro
+        this.drivetrain.setAngle(this.imuWrapper, (float)(-Math.PI/2));
         // briefly ram into the block pile
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(1000);
         this.drivetrain.stopMoving();
-        sleep(1000);
-        // attempt to pick up a block
+        sleep(500);
+
+        // Attempt to pick up a block
         this.grabberPrimer.grab();
-        sleep(1000);
-        wiggle();
-        this.grabberPrimer.open();
-        sleep(500); // may need to wait another 500ms
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(750);
-        this.drivetrain.stopMoving();
-        sleep(800);
-        this.grabberPrimer.grab();
-        sleep(800);
+        sleep(500);
+        grabberPrimer.open();
+        sleep(500);
+        grabberPrimer.grab();
+        sleep(200);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
+        sleep(500);
+
+        //Raise up
         this.raiser.setPower(1);
         sleep(500);
         this.raiser.setPower(0);
-        sleep(800);
-        // back up and then go back
-        // problem: we need a way to find out where we are when we get the block
+        sleep(200);
+        // Move back towards cryptobox
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 70));
+        drivetrain.stopMoving();
     }
 }
