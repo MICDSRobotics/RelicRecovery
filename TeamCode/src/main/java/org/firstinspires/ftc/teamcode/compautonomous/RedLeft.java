@@ -31,6 +31,8 @@ public class RedLeft extends LinearOpMode implements Settings {
     private VuforiaWrapper vuforiaWrapper;
     private GrabberPrimer grabberPrimer;
 
+    private double voltage;
+
     private Servo armExtender;
     private Servo armRotator;
     private ColorSensorWrapper colorSensorWrapper;
@@ -104,7 +106,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         sleep(1000);
 
-        imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
+        //imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
 
         this.raiser.setPower(1);
         sleep(500);
@@ -119,14 +121,14 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(100);
 
 
-        // turn counterclockwise
+        /* turn counterclockwise
         this.drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0, -0.5);
         sleep(rotate90 + 300); // + 800
         this.drivetrain.stopMoving();
+        sleep(1000); */
+
+        drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
         sleep(1000);
-
-        boolean kill = false;
-
 
         // START
         switch (relicRecoveryVuMark) {
@@ -159,34 +161,53 @@ public class RedLeft extends LinearOpMode implements Settings {
         wiggle();
         wiggle();
 
-
-        // PULL OUT
+        // PULL OUT (Once)
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(200);
+        sleep(150);
         this.drivetrain.stopMoving();
 
         telemetry.update();
+
         sleep(1000);
-        // END
 
+        //Move back to center of cryptobox tabe (if necessary)
+        // START
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                sleep((long)(1100 + sideShort));
+                break;
+            case CENTER:
+                break;
+            case RIGHT:
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                sleep((long)(1100 + sideShort));
+                break;
+            default:
+                break;
+        }
 
+        this.attemptToGetMultiBlock();
 
-        /* DEFAULT 'RAM' CODE
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
-        sleep((long)(sideShort));
         this.drivetrain.stopMoving();
+        sleep(1000);
 
-        sleep(3000);
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                // attempt to place right
+                break;
+            case CENTER:
+                // attempt to place on left side
+                break;
+            case RIGHT:
+                // attempt to place on left
+                break;
+            default:
+                // just go into the center on the off-chance that the robot couldn't find the vumark that we needed
+                break;
+        }
 
-        this.drivetrain.stopMoving();
 
-        this.grabberPrimer.open();
-        sleep(1200);
-
-        // pull away
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(100);
-        this.drivetrain.stopMoving();*/
     }
 
     public void wiggle(){
@@ -196,5 +217,37 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(150);
         drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
         sleep(150);
+    }
+
+    public void attemptToGetMultiBlock() {
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep((long)TimeOffsetVoltage.calculateDistance(this.voltage, 60));
+        this.drivetrain.stopMoving();
+        sleep(1000);
+        // spin around 180 degrees using the gyro
+        this.drivetrain.setAngle(this.imuWrapper, (float)(Math.PI));
+        // briefly ram into the block pile
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(1000);
+        this.drivetrain.stopMoving();
+        sleep(1000);
+        // attempt to pick up a block
+        this.grabberPrimer.grab();
+        sleep(1000);
+        wiggle();
+        this.grabberPrimer.open();
+        sleep(500); // may need to wait another 500ms
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(750);
+        this.drivetrain.stopMoving();
+        sleep(800);
+        this.grabberPrimer.grab();
+        sleep(800);
+        this.raiser.setPower(1);
+        sleep(500);
+        this.raiser.setPower(0);
+        sleep(800);
+        // back up and then go back
+        // problem: we need a way to find out where we are when we get the block
     }
 }
