@@ -119,7 +119,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         //Turn 90 degrees to face cryptobox
         drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
-        sleep(1000);
+        sleep(500);
 
         // Move in front of correct cryptobox column
         switch (relicRecoveryVuMark) {
@@ -187,20 +187,40 @@ public class RedLeft extends LinearOpMode implements Settings {
         this.drivetrain.stopMoving();
         sleep(200);
 
+        //REPEAT PUTTING BLOCK IN THE THING
+        //Turn 90 degrees to face cryptobox
+        drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
+        sleep(500);
+
+        // Move in front of correct cryptobox column
         switch (relicRecoveryVuMark) {
-            case LEFT:
-                // attempt to place right
+            case LEFT: telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                sleep((long)(1100 + sideShort));
                 break;
-            case CENTER:
-                // attempt to place on left side
+            case CENTER: telemetry.addData("Column", "Putting it in the center");
                 break;
-            case RIGHT:
-                // attempt to place on left
+            case RIGHT: telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                sleep((long)(1100 + sideShort));
                 break;
             default:
-                // just go into the center on the off-chance that the robot couldn't find the vumark that we needed
                 break;
         }
+
+        telemetry.update();
+
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        sleep(200);
+
+        grabberPrimer.open();
+        drivetrain.stopMoving();
+        sleep(500);
+
+        // PULL OUT (Once)
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(150);
+        this.drivetrain.stopMoving();
 
     }
 
@@ -230,11 +250,12 @@ public class RedLeft extends LinearOpMode implements Settings {
         grabberPrimer.grab();
         sleep(200);
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
-        sleep(500);
+        sleep(100);
+        drivetrain.stopMoving();
 
         //Raise up
         this.raiser.setPower(1);
-        sleep(500);
+        sleep(600);
         this.raiser.setPower(0);
         sleep(200);
         // Move back towards cryptobox
