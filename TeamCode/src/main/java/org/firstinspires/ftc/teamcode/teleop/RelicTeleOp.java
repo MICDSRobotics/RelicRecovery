@@ -218,7 +218,7 @@ public class RelicTeleOp extends OpMode
                 }
             }
 
-            //Just in case they release y before they release a bumper. 
+            //Just in case they release y before they release a bumper.
             intakeFlipper.setPower(0);
 
         }
@@ -245,9 +245,7 @@ public class RelicTeleOp extends OpMode
             }
 
         }
-
-
-
+        
         telemetry.addData("Slowmode", this.lowSpeed);
 
         telemetry.addData("ArmRotator Position", armRotator.getPosition());
