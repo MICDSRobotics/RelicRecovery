@@ -69,9 +69,11 @@ public class RelicTeleOp extends OpMode
     private MecanumDrive drivetrain;
 
     private DcMotor raiser;
-    private DcMotor intake;
     private Servo armRotator;
     private Servo armExtender;
+
+    private DcMotor intake;
+    private DcMotor intakeFlipper;
 
     private CRServo grabberExtender;
     private Servo grabberWrist;
@@ -93,6 +95,7 @@ public class RelicTeleOp extends OpMode
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
         intake = hardwareMap.dcMotor.get("intake");
+        intakeFlipper = hardwareMap.dcMotor.get("intakeFlipper");
         raiser = hardwareMap.dcMotor.get("raiser");
         raiser.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -158,14 +161,6 @@ public class RelicTeleOp extends OpMode
             telemetry.addData("Switching", "YEET");
         }
 
-        if(p1.y == PRESSED){
-            if(intake.getPower() == 0){
-                intake.setPower(1);
-            } else {
-                intake.setPower(0);
-            }
-        }
-
         //Raise arm while the y button is held, lower it when a it held
         if(p1.a.isDown() || p2.a.isDown()){
             raiser.setPower(1);
@@ -192,17 +187,66 @@ public class RelicTeleOp extends OpMode
         grabberExtender.setPower(gamepad2.right_trigger);
         grabberExtender.setPower(-gamepad2.left_trigger);
 
-        if(p2.rightBumper.isDown()) {
-            grabberWrist.setPosition(Math.max(0, grabberWrist.getPosition() - 0.01));
-        } else if(p2.y.isDown() && p2.rightBumper.isDown()) {
-            grabberWrist.setPosition(Math.min(1, grabberWrist.getPosition() + 0.01));
+        //p1 shifted controls
+        if(p1.y.isDown()){
+
+            if(p1.rightBumper.isDown()){
+                intakeFlipper.setPower(0.1);
+            } else if (p1.leftBumper.isDown()){
+                intakeFlipper.setPower(-0.1);
+            } else {
+                intakeFlipper.setPower(0);
+            }
+
+
+        } else {
+
+            //Sets the direction to forward/reverse (depending on button)
+            // or turns it off if it's already going in that direction.
+            if(p1.rightBumper == PRESSED){
+                if(intake.getPower() <= 0){
+                    intake.setPower(1);
+                } else {
+                    intake.setPower(0);
+                }
+            }
+            if(p1.leftBumper == PRESSED){
+                if(intake.getPower() >= 0){
+                    intake.setPower(-1);
+                } else {
+                    intake.setPower(0);
+                }
+            }
+
+            //Just in case they release y before they release a bumper. 
+            intakeFlipper.setPower(0);
+
         }
 
-        if(p2.leftBumper.isDown()) {
-            grabberHand.setPosition(Math.max(0, grabberHand.getPosition() - 0.01));
-        } else if(p2.y.isDown() && p2.leftBumper.isDown()) {
-            grabberHand.setPosition(Math.min(1, grabberHand.getPosition() + 0.01));
+        //p2 shifted controls
+        if(p2.y.isDown()){
+
+            if(p2.leftBumper.isDown()) {
+                grabberHand.setPosition(Math.min(1, grabberHand.getPosition() + 0.01));
+            }
+
+            if(p2.rightBumper.isDown()){
+                grabberWrist.setPosition(Math.min(1, grabberWrist.getPosition() + 0.01));
+            }
+
+        } else {
+
+            if(p2.leftBumper.isDown()) {
+                grabberHand.setPosition(Math.max(0, grabberHand.getPosition() - 0.01));
+            }
+
+            if(p2.rightBumper.isDown()){
+                grabberWrist.setPosition(Math.max(0, grabberWrist.getPosition() - 0.01));
+            }
+
         }
+
+
 
         telemetry.addData("Slowmode", this.lowSpeed);
 
