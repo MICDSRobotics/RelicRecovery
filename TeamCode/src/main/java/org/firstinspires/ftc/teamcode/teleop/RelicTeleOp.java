@@ -69,6 +69,7 @@ public class RelicTeleOp extends OpMode
     private MecanumDrive drivetrain;
 
     private DcMotor raiser;
+    private DcMotor intake;
     private Servo armRotator;
     private Servo armExtender;
 
@@ -91,6 +92,7 @@ public class RelicTeleOp extends OpMode
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
+        intake = hardwareMap.dcMotor.get("intake");
         raiser = hardwareMap.dcMotor.get("raiser");
         raiser.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -157,7 +159,11 @@ public class RelicTeleOp extends OpMode
         }
 
         if(p1.y == PRESSED){
-            //turn intake on/off
+            if(intake.getPower() == 0){
+                intake.setPower(1);
+            } else {
+                intake.setPower(0);
+            }
         }
 
         //Raise arm while the y button is held, lower it when a it held
