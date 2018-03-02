@@ -29,7 +29,6 @@ public class RedLeft extends LinearOpMode implements Settings {
     private Robot robot;
     private ComplexRaiser complexRaiser;
     private FlipperIntake flipperIntake;
-    private Outtake outtake;
     private MecanumDrive drivetrain;
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
@@ -50,7 +49,6 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain = (MecanumDrive) robot.getDrivetrain();
         this.complexRaiser = new ComplexRaiser(hardwareMap);
         this.flipperIntake = new FlipperIntake(hardwareMap);
-        this.outtake = new Outtake(hardwareMap);
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
 
@@ -138,7 +136,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         telemetry.update();
 
-        this.outtake.spitOutGlyph();
+        this.complexRaiser.getX().spitOutGlyph();
         drivetrain.stopMoving();
         sleep(500);
 
@@ -212,10 +210,10 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
         sleep(200);
 
-        this.outtake.spitOutGlyph();
+        this.complexRaiser.getX().spitOutGlyph();
         drivetrain.stopMoving();
         sleep(500);
-        this.outtake.retractOuttake();
+        this.complexRaiser.getX().retractOuttake();
 
         // PULL OUT (Once)
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
@@ -245,7 +243,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         // Attempt to pick up a block
         this.flipperIntake.startIntake();
         sleep(500);
-        this.outtake.spitOutGlyph();
+        this.complexRaiser.getX().spitOutGlyph();
         sleep(500);
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
         sleep(100);
