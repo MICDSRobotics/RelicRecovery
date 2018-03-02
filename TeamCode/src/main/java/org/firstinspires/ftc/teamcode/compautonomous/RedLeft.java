@@ -9,9 +9,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.Outtake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 
 /**
@@ -24,12 +27,12 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 public class RedLeft extends LinearOpMode implements Settings {
 
     private Robot robot;
-    private DcMotor raiser;
-    private Servo grabber;
+    private ComplexRaiser complexRaiser;
+    private FlipperIntake flipperIntake;
+    private Outtake outtake;
     private MecanumDrive drivetrain;
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
-    private GrabberPrimer grabberPrimer;
 
     private double voltage;
 
@@ -45,11 +48,11 @@ public class RedLeft extends LinearOpMode implements Settings {
         //Initialize hardware
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
+        this.complexRaiser = new ComplexRaiser(hardwareMap);
+        this.flipperIntake = new FlipperIntake(hardwareMap);
+        this.outtake = new Outtake(hardwareMap);
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
-        grabberPrimer = new GrabberPrimer(this.grabber);
 
         //Assuming other hardware not yet on the robot
         armRotator = hardwareMap.servo.get("armRotator");
@@ -61,15 +64,11 @@ public class RedLeft extends LinearOpMode implements Settings {
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.5);
 
-        this.grabberPrimer.initSystem();
-
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
         waitForStart();
-
-        this.grabberPrimer.grab();
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
@@ -105,9 +104,9 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         sleep(500);
 
-        this.raiser.setPower(1);
+        this.complexRaiser.raiseUp();
         sleep(500);
-        this.raiser.setPower(0);
+        this.complexRaiser.stop();
 
         // Move backwards off balancing stone
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
@@ -118,7 +117,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(100);
 
         //Turn 90 degrees to face cryptobox
-        drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
+        drivetrain.setAngle(imuWrapper, -(float)Math.PI/2);
         sleep(500);
 
         // Move in front of correct cryptobox column
@@ -139,7 +138,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         telemetry.update();
 
-        grabberPrimer.open();
+        this.outtake.spitOutGlyph();
         drivetrain.stopMoving();
         sleep(500);
 
@@ -153,7 +152,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         wiggle();
 
         // PULL OUT (Once)
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(150);
         this.drivetrain.stopMoving();
 
@@ -178,9 +177,9 @@ public class RedLeft extends LinearOpMode implements Settings {
                 break;
         }
 
-        raiser.setPower(-1);
+        this.complexRaiser.lower();
         sleep(450);
-        raiser.setPower(0);
+        this.complexRaiser.stop();
 
         this.attemptToGetMultiBlock();
 
@@ -213,9 +212,10 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
         sleep(200);
 
-        grabberPrimer.open();
+        this.outtake.spitOutGlyph();
         drivetrain.stopMoving();
         sleep(500);
+        this.outtake.retractOuttake();
 
         // PULL OUT (Once)
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
@@ -243,20 +243,18 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(500);
 
         // Attempt to pick up a block
-        this.grabberPrimer.grab();
+        this.flipperIntake.startIntake();
         sleep(500);
-        grabberPrimer.open();
+        this.outtake.spitOutGlyph();
         sleep(500);
-        grabberPrimer.grab();
-        sleep(200);
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
         sleep(100);
         drivetrain.stopMoving();
 
         //Raise up
-        this.raiser.setPower(1);
+        this.complexRaiser.raiseUp();
         sleep(600);
-        this.raiser.setPower(0);
+        this.complexRaiser.stop();
         sleep(200);
         // Move back towards cryptobox
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
