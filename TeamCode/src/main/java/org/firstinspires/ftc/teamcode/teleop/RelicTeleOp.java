@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.autonomous.lib.ProfileMap;
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
@@ -80,6 +81,7 @@ public class RelicTeleOp extends OpMode
     private Servo grabberHand;
 
     private AccessControl accessControl = new AccessControl();
+    private ProfileMap currentKeyMap = ProfileMap.MAIN;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -187,8 +189,18 @@ public class RelicTeleOp extends OpMode
         grabberExtender.setPower(gamepad2.right_trigger);
         grabberExtender.setPower(-gamepad2.left_trigger);
 
+        if (p2.y.isDown()) {
+            // switch the key map
+            if (this.currentKeyMap == ProfileMap.MAIN) {
+                this.currentKeyMap = ProfileMap.RELIC;
+            }
+            else {
+                this.currentKeyMap = ProfileMap.MAIN;
+            }
+        }
+
         //p1 shifted controls
-        if(p1.y.isDown()){
+        if(this.currentKeyMap.equals(ProfileMap.RELIC)){
 
             if(p1.rightBumper.isDown()){
                 intakeFlipper.setPower(0.1);
@@ -224,7 +236,7 @@ public class RelicTeleOp extends OpMode
         }
 
         //p2 shifted controls
-        if(p2.y.isDown()){
+        if(this.currentKeyMap.equals(ProfileMap.RELIC)){
 
             if(p2.leftBumper.isDown()) {
                 grabberHand.setPosition(Math.min(1, grabberHand.getPosition() + 0.01));
@@ -252,6 +264,8 @@ public class RelicTeleOp extends OpMode
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
 
         telemetry.addData("Grabber Extender Power", grabberExtender.getPower());
+
+        telemetry.addData("Controller Map", this.currentKeyMap.stringify());
 
         p1.update();
         p2.update();
