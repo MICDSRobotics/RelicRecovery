@@ -39,8 +39,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.autonomous.lib.ProfileMap;
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.Outtake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
 
@@ -69,19 +72,17 @@ public class RelicTeleOp extends OpMode
 
     private MecanumDrive drivetrain;
 
-    private DcMotor raiser;
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+
     private Servo armRotator;
     private Servo armExtender;
-
-    private DcMotor intake;
-    private DcMotor intakeFlipper;
 
     private CRServo grabberExtender;
     private Servo grabberWrist;
     private Servo grabberHand;
 
     private AccessControl accessControl = new AccessControl();
-    private ProfileMap currentKeyMap = ProfileMap.MAIN;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -96,10 +97,8 @@ public class RelicTeleOp extends OpMode
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
-        intake = hardwareMap.dcMotor.get("intake");
-        intakeFlipper = hardwareMap.dcMotor.get("intakeFlipper");
-        raiser = hardwareMap.dcMotor.get("raiser");
-        raiser.setDirection(DcMotorSimple.Direction.FORWARD);
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
 
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
@@ -165,11 +164,11 @@ public class RelicTeleOp extends OpMode
 
         //Raise arm while the y button is held, lower it when a it held
         if(p1.a.isDown() || p2.a.isDown()){
-            raiser.setPower(1);
+            raiser.raiseUp();
         } else if (p1.b.isDown() || p2.b.isDown()) {
-            raiser.setPower(-1);
+            raiser.lower();
         } else {
-            raiser.setPower(0);
+            raiser.stop();
         }
 
         //Set rotation servo positions
@@ -189,54 +188,43 @@ public class RelicTeleOp extends OpMode
         grabberExtender.setPower(gamepad2.right_trigger);
         grabberExtender.setPower(-gamepad2.left_trigger);
 
-        if (p2.y.isDown()) {
-            // switch the key map
-            if (this.currentKeyMap == ProfileMap.MAIN) {
-                this.currentKeyMap = ProfileMap.RELIC;
-            }
-            else {
-                this.currentKeyMap = ProfileMap.MAIN;
-            }
-        }
+        // p1 shifted controls
+        if(p1.y.isDown()){
 
-        //p1 shifted controls
-        if(this.currentKeyMap.equals(ProfileMap.RELIC)){
+            // outtake stuff
 
-            if(p1.rightBumper.isDown()){
-                intakeFlipper.setPower(0.1);
-            } else if (p1.leftBumper.isDown()){
-                intakeFlipper.setPower(-0.1);
-            } else {
-                intakeFlipper.setPower(0);
+            if (p1.leftBumper.isDown()) {
+                raiser.retractFlipper();
             }
 
+            if (p1.rightBumper.isDown()) {
+                raiser.purgeGlyph();
+            }
 
         } else {
 
-            //Sets the direction to forward/reverse (depending on button)
-            // or turns it off if it's already going in that direction.
-            if(p1.rightBumper == PRESSED){
-                if(intake.getPower() <= 0){
-                    intake.setPower(1);
+            // intake stuff
+
+            if (p1.leftBumper.isDown()) {
+                if (intake.getRotation().getPosition() < 0) {
+                    intake.flipOutIntake();
                 } else {
-                    intake.setPower(0);
-                }
-            }
-            if(p1.leftBumper == PRESSED){
-                if(intake.getPower() >= 0){
-                    intake.setPower(-1);
-                } else {
-                    intake.setPower(0);
+                    intake.flipInIntake();
                 }
             }
 
-            //Just in case they release y before they release a bumper.
-            intakeFlipper.setPower(0);
+            if (p1.rightBumper.isDown()) {
+                if (intake.getIntake().getFrontPower() < 0) {
+                    intake.startIntake();
+                } else {
+                    intake.stopIntake();
+                }
+            }
 
         }
 
         //p2 shifted controls
-        if(this.currentKeyMap.equals(ProfileMap.RELIC)){
+        if(p2.y.isDown()){
 
             if(p2.leftBumper.isDown()) {
                 grabberHand.setPosition(Math.min(1, grabberHand.getPosition() + 0.01));
@@ -264,8 +252,6 @@ public class RelicTeleOp extends OpMode
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
 
         telemetry.addData("Grabber Extender Power", grabberExtender.getPower());
-
-        telemetry.addData("Controller Map", this.currentKeyMap.stringify());
 
         p1.update();
         p2.update();
