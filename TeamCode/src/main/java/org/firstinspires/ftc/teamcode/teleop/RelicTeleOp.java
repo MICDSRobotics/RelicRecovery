@@ -198,7 +198,7 @@ public class RelicTeleOp extends OpMode
             }
 
             if (p1.rightBumper.isDown()) {
-                raiser.purgeGlyph();
+                raiser.outtakeGlyph();
             }
 
         } else {
