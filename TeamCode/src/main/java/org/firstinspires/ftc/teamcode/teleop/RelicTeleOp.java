@@ -214,7 +214,7 @@ public class RelicTeleOp extends OpMode
             }
 
             if (p1.rightBumper.isDown()) {
-                if (intake.getIntake().getFrontPower() < 0) {
+                if (intake.getIntake().getPower() < 0) {
                     intake.startIntake();
                 } else {
                     intake.stopIntake();
