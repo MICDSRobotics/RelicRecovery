@@ -168,20 +168,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         //Move back to center of cryptobox tape (if necessary)
         // START
-        switch (relicRecoveryVuMark) {
-            case LEFT:
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            case CENTER:
-                break;
-            case RIGHT:
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            default:
-                break;
-        }
+        moveToCorrectColumn();
 
         raiser.lower();
         sleep(450);
@@ -237,6 +224,26 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(150);
         drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
         sleep(150);
+    }
+
+    public void moveToCorrectColumn(){
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            case CENTER:
+                telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT:
+                telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            default:
+                break;
+        }
     }
 
     public void attemptToGetMultiBlock() {

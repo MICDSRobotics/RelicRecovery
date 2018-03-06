@@ -112,8 +112,6 @@ public class RedRight extends LinearOpMode implements Settings {
 
         sleep(1000);
 
-        imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
-
         // move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         // 115cm
@@ -122,35 +120,17 @@ public class RedRight extends LinearOpMode implements Settings {
         this.drivetrain.stopMoving();
         sleep(100);
 
+        //TODO: Investigate using not full velocity and see if that will allow the robot to move forward but not onto the stone
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(75);
         this.drivetrain.stopMoving();
         sleep(1000);
 
-
         this.drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1, 0);
         sleep(sideShort + 100);
-
-        //Face cryptobox
-        this.drivetrain.setAngle(imuWrapper, Math.PI);
-        sleep(1000);
         this.drivetrain.stopMoving();
 
-        // START
-        switch (relicRecoveryVuMark) {
-            case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            case CENTER: telemetry.addData("Column", "Putting it in the center");
-                break;
-            case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            default:
-                break;
-        }
+        moveToCorrectColumn();
 
         telemetry.update();
 
@@ -184,5 +164,25 @@ public class RedRight extends LinearOpMode implements Settings {
         sleep(150);
         drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
         sleep(150);
+    }
+
+    public void moveToCorrectColumn(){
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            case CENTER:
+                telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT:
+                telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            default:
+                break;
+        }
     }
 }

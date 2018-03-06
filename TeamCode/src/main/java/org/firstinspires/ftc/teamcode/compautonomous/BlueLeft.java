@@ -146,20 +146,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         //STEP 5: SCORE GLYPH INTO CORRECT COLUMN
         //Move to sides according to cryptobox key
-        switch (relicRecoveryVuMark) {
-            case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            case CENTER: telemetry.addData("Column", "Putting it in the center");
-                break;
-            case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            default:
-                break;
-        }
+        moveToCorrectColumn();
 
         telemetry.update();
 
@@ -192,6 +179,26 @@ public class BlueLeft extends LinearOpMode implements Settings{
         sleep(150);
         drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
         sleep(150);
+    }
+
+    public void moveToCorrectColumn(){
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                telemetry.addData("Column", "Putting it in the left");
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            case CENTER:
+                telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT:
+                telemetry.addData("Column", "Putting it in the right");
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                sleep((long) (1100 + sideShort));
+                break;
+            default:
+                break;
+        }
     }
 
 }
