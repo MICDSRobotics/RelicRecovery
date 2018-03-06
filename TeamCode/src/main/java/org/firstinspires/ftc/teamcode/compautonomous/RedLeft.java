@@ -73,8 +73,6 @@ public class RedLeft extends LinearOpMode implements Settings {
         raiser.retractFlipper();
         intake.flipInIntake();
 
-        intake.getRotation().setPosition(0.9);
-
         telemetry.update();
 
         waitForStart();
