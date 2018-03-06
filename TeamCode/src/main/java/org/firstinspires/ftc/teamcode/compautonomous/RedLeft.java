@@ -56,11 +56,11 @@ public class RedLeft extends LinearOpMode implements Settings {
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
-        armRotator.scaleRange(0.1, 0.9);
-        armExtender.scaleRange(0.16, 0.9);
+        armRotator.scaleRange(0.158, 0.7);
+        armExtender.scaleRange(0.16, 0.95);
 
         armExtender.setPosition(1.0);
-        armRotator.setPosition(0.5);
+        armRotator.setPosition(1.0);
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
@@ -79,8 +79,10 @@ public class RedLeft extends LinearOpMode implements Settings {
         telemetry.update();
 
         //STEP 2: Hitting the jewel
-        armExtender.setPosition(0); //servo in 'out' position
+        armRotator.setPosition(0.5);
         sleep(1000);
+        armExtender.setPosition(0); //servo in 'out' position
+        sleep(1500);
 
         telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
 

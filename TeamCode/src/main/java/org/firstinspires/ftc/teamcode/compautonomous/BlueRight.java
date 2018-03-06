@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
@@ -24,9 +26,11 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 public class BlueRight extends LinearOpMode implements Settings{
 
     private Robot robot;
-    private DcMotor raiser;
-    private Servo grabber;
     private MecanumDrive drivetrain;
+
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
 
@@ -35,8 +39,6 @@ public class BlueRight extends LinearOpMode implements Settings{
     private Servo armExtender;
     private Servo armRotator;
     private ColorSensorWrapper colorSensorWrapper;
-    private GrabberPrimer grabberPrimer;
-
 
     private RelicRecoveryVuMark relicRecoveryVuMark;
 
@@ -46,36 +48,32 @@ public class BlueRight extends LinearOpMode implements Settings{
         //Initialize hardware
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
+
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
+
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
-        grabberPrimer = new GrabberPrimer(this.grabber);
-
 
         //Assuming other hardware not yet on the robot
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
-        armRotator.scaleRange(0.1, 0.9);
-        armExtender.scaleRange(0.16, 0.9);
+        armRotator.scaleRange(0.158, 0.7);
+        armExtender.scaleRange(0.16, 0.95);
 
         armExtender.setPosition(1.0);
-        armRotator.setPosition(0.5);
-
-        grabberPrimer.initSystem();
+        armRotator.setPosition(1.0);
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        telemetry.addData("Grabber", grabber.getPosition());
+        //TODO: Initilize outtake servos and the intake flipper
+
         telemetry.update();
 
         waitForStart();
-
-        //grab the block before moving off balancing stone
-        grabberPrimer.grab();
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
@@ -88,7 +86,10 @@ public class BlueRight extends LinearOpMode implements Settings{
         telemetry.update();
 
         //STEP 2: Hitting the jewel
+        armRotator.setPosition(0.5);
+        sleep(1000);
         armExtender.setPosition(0); //servo in 'out' position
+        sleep(1500);
 
         sleep(2000);
 

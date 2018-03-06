@@ -65,12 +65,8 @@ public class TestRobotHardware extends OpMode
 
     private Controller p1;
 
-    private MecanumDrive drivetrain;
-
-    private DcMotor raiser;
-    private Servo grabber;
-    private Servo armRotator;
-    private Servo armExtender;
+    private Servo outtake1;
+    private Servo outtake2;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -81,19 +77,10 @@ public class TestRobotHardware extends OpMode
 
         robot = new Robot(hardwareMap);
         p1 = new Controller(gamepad1);
-        drivetrain = (MecanumDrive) robot.getDrivetrain();
 
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
+        outtake1 = hardwareMap.servo.get("outtake1");
+        outtake2 = hardwareMap.servo.get("outtake2");
 
-        armRotator = hardwareMap.servo.get("armRotator");
-        armExtender = hardwareMap.servo.get("armExtender");
-
-        armRotator.scaleRange(0.1,0.9);
-        armExtender.scaleRange(0.16, 0.75);
-
-
-        raiser.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /*
@@ -119,41 +106,21 @@ public class TestRobotHardware extends OpMode
 
         telemetry.addData("Status", "Running: " + runtime.toString());
 
-        drivetrain.defaultDrive(gamepad1, telemetry);
-
-        //Raise arm while the y button is held, lower it when a it held
-        if(gamepad1.y){
-            raiser.setPower(1);
-        } else if (gamepad1.a) {
-            raiser.setPower(-1);
-        } else {
-            raiser.setPower(0);
-        }
-        telemetry.addData("Raiser Power", raiser.getPower());
-
-        //Move grabber when bumpers are pressed.
-        if(gamepad1.left_bumper){
-            grabber.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
-        } else if (gamepad1.right_bumper){
-            grabber.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
-        }
-        telemetry.addData("Grabber Position", grabber.getPosition());
-
-        //Increment/Decrement rotation servo positions
-        if(gamepad1.dpad_left){
-            armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
-        } else if (gamepad1.dpad_right){
-            armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
-        }
-        telemetry.addData("ArmRotator Position", armRotator.getPosition());
+        robot.getDrivetrain().defaultDrive(gamepad1, telemetry);
 
         //Increment/Decrement extender servo positions
-        if(gamepad1.dpad_up){
-            armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
-        } else if(gamepad1.dpad_down){
-            armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
+        if(p1.dpadUp.isDown()){
+            outtake1.setPosition(Math.min(1, outtake1.getPosition() + 0.01));
+            outtake2.setPosition(Math.max(0, outtake2.getPosition() - 0.01));
+        } else if(p1.dpadDown.isDown()){
+            outtake1.setPosition(Math.max(0, outtake1.getPosition() - 0.01));
+            outtake2.setPosition(Math.min(1, outtake2.getPosition() + 0.01));
         }
-        telemetry.addData("ArmExtender Position", armExtender.getPosition());
+
+        telemetry.addData("Outtake 1", outtake1.getPosition());
+        telemetry.addData("Outtake 2", outtake2.getPosition());
+
+        p1.update();
 
     }
 
