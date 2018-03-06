@@ -115,6 +115,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(1000);
 
         // Move backwards off balancing stone
+        this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
         // 160cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
@@ -126,30 +127,16 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain.setAngle(imuWrapper, -Math.PI/2);
         sleep(500);
 
-        // Move in front of correct cryptobox column
-        switch (relicRecoveryVuMark) {
-            case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            case CENTER: telemetry.addData("Column", "Putting it in the center");
-                break;
-            case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            default:
-                break;
-        }
+        moveToCorrectColumn();
 
         telemetry.update();
 
-        raiser.outtakeGlyph();
         drivetrain.stopMoving();
         sleep(500);
 
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
         sleep(200);
+        raiser.outtakeGlyph();
 
         drivetrain.stopMoving();
         sleep(200);
@@ -158,7 +145,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         wiggle();
 
         // PULL OUT (Once)
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(150);
         this.drivetrain.stopMoving();
 
@@ -168,7 +155,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         //Move back to center of cryptobox tape (if necessary)
         // START
-        moveToCorrectColumn();
+        /*moveToCorrectColumn();
 
         raiser.lower();
         sleep(450);
@@ -184,21 +171,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain.setAngle(imuWrapper, Math.PI/2);
         sleep(500);
 
-        // Move in front of correct cryptobox column
-        switch (relicRecoveryVuMark) {
-            case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            case CENTER: telemetry.addData("Column", "Putting it in the center");
-                break;
-            case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            default:
-                break;
-        }
+        moveToCorrectColumn();
 
         telemetry.update();
 
@@ -214,7 +187,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(150);
         this.drivetrain.stopMoving();
-
+        */
     }
 
     public void wiggle(){

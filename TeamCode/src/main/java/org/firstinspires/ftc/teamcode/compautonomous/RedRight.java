@@ -116,13 +116,13 @@ public class RedRight extends LinearOpMode implements Settings {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 115));
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 115));
         this.drivetrain.stopMoving();
         sleep(100);
 
-        //TODO: Investigate using not full velocity and see if that will allow the robot to move forward but not onto the stone
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(75);
+        // TODO: Investigate using not full velocity and see if that will allow the robot to move forward but not onto the stone
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0);
+        sleep(150);
         this.drivetrain.stopMoving();
         sleep(1000);
 

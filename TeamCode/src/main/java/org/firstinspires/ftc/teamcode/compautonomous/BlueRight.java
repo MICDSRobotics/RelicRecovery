@@ -70,7 +70,6 @@ public class BlueRight extends LinearOpMode implements Settings{
         vuforiaWrapper.getLoader().getTrackables().activate();
 
         raiser.retractFlipper();
-        intake.flipInIntake();
 
         telemetry.update();
 
@@ -114,12 +113,14 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         // move backwards and slam into the wall
+        this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); // move backwards
         // 78cm
         this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         // 170
         sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 185));
         this.drivetrain.stopMoving();
+        this.intake.flipOutIntake();
         sleep(100);
 
         robot.stopMoving();
@@ -151,10 +152,13 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         sleep(1000);
 
-        wiggle();
-        wiggle();
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
-        sleep(250);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
+        sleep(350);
+        this.drivetrain.stopMoving();
+
+        sleep(750);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 1);
+        sleep(350);
         this.drivetrain.stopMoving();
 
         /*this.attemptToGetMultiBlock();
