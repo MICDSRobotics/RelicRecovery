@@ -62,7 +62,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         armRotator.scaleRange(0.158, 0.7);
         armExtender.scaleRange(0.16, 0.95);
 
-        armExtender.setPosition(1.0);
+        armExtender.setPosition(0.8);
         armRotator.setPosition(1.0);
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
@@ -71,12 +71,13 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         raiser.getX().initOuttake();
         intake.initIntake();
+        this.intake.flipInIntake();
+
+        intake.getRotation().setPosition(0.9);
 
         telemetry.update();
 
         waitForStart();
-
-        this.intake.flipInIntake();
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
@@ -121,7 +122,8 @@ public class BlueRight extends LinearOpMode implements Settings{
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); // move backwards
         // 78cm
         this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 170));
+        // 170
+        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 185));
         this.drivetrain.stopMoving();
         sleep(100);
 
@@ -156,23 +158,27 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(200);
+        sleep(500);
 
+        this.armExtender.setPosition(0.79);
+        this.armRotator.setPosition(0.309);
         raiser.outtakeGlyph();
 
         drivetrain.stopMoving();
-        sleep(200);
-
-        // PULL OUT (Once)
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(150);
-        this.drivetrain.stopMoving();
+        sleep(500);
+        raiser.retractFlipper();
 
         telemetry.update();
 
         sleep(1000);
 
-        this.attemptToGetMultiBlock();
+        wiggle();
+        wiggle();
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        sleep(250);
+        this.drivetrain.stopMoving();
+
+        /*this.attemptToGetMultiBlock();
         this.moveAwayFromPit();
         this.placeMultiBlock();
 
@@ -183,23 +189,13 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
-        sleep(200);
+        sleep(750);
 
         drivetrain.stopMoving();
         sleep(200);
 
         wiggle();
-        wiggle();
-
-        // PULL OUT (Once)
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(150);
-        this.drivetrain.stopMoving();
-
-        telemetry.update();
-
-        this.drivetrain.stopMoving();
-        sleep(1000);
+        wiggle();*/
     }
 
     public void wiggle(){
@@ -212,16 +208,10 @@ public class BlueRight extends LinearOpMode implements Settings{
     }
 
     public void attemptToGetMultiBlock() {
-        this.drivetrain.setAngle(imuWrapper, (float)(Math.PI / 2));
-        sleep(500);
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 20));
         this.drivetrain.stopMoving();
         sleep(1000);
-
-        // spin around 180 degrees using the gyro
-        this.drivetrain.setAngle(this.imuWrapper, (float)(-Math.PI / 2));
-        sleep(500);
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(750);
@@ -241,18 +231,11 @@ public class BlueRight extends LinearOpMode implements Settings{
 
     public void moveAwayFromPit() {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 90));
+        this.drivetrain.stopMoving();
+        this.raiser.outtakeGlyph();
         sleep(750);
-        sleep(500);
-        this.drivetrain.stopMoving();
-
-        this.drivetrain.setAngle(imuWrapper, (float)(Math.PI / 2));
-        sleep(500);
-        this.drivetrain.stopMoving();
-
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 30));
-        sleep(500);
-        this.drivetrain.stopMoving();
+        this.raiser.retractFlipper();
     }
 
     public void placeMultiBlock() {

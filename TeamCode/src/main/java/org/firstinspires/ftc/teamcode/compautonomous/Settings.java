@@ -10,7 +10,7 @@ public interface Settings {
     //Full battery tests
     int firstStretch = 1300;
     int forwardShort = 950;
-    int sideShort = 750;
+    int sideShort = 1000; // 750
     int rotate90 = 475;
     //int lineUp = ;
     double slamIntoWallSpeed = 0.4;
