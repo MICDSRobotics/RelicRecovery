@@ -69,11 +69,14 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        //TODO: Initilize outtake servos and the intake flipper
+        raiser.getX().initOuttake();
+        intake.initIntake();
 
         telemetry.update();
 
         waitForStart();
+
+        this.intake.flipInIntake();
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
@@ -87,11 +90,10 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         //STEP 2: Hitting the jewel
         armRotator.setPosition(0.5);
+        armExtender.setPosition(0.8);
         sleep(1000);
         armExtender.setPosition(0); //servo in 'out' position
         sleep(1500);
-
-        sleep(2000);
 
         telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
         //Checks that blue jewel is closer towards the cryptoboxes (assuming color sensor is facing forward
@@ -108,12 +110,8 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         sleep(1000);
 
-        raiser.setPower(1);
-        sleep(150);
-        raiser.setPower(0);
-
         armExtender.setPosition(1);
-        armRotator.setPosition(0.5);
+        armRotator.setPosition(1);
 
         sleep(1000);
 
@@ -131,13 +129,13 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         //Face cryptobox
-        drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
+        drivetrain.setAngle(imuWrapper, -(float)Math.PI/2);
         sleep(1000);
 
         switch (relicRecoveryVuMark) {
             case LEFT:
                 telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
                 sleep((long) (1100 + sideShort));
                 break;
             case CENTER:
@@ -145,7 +143,7 @@ public class BlueRight extends LinearOpMode implements Settings{
                 break;
             case RIGHT:
                 telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
                 sleep((long) (1100 + sideShort));
                 break;
             default:
@@ -154,21 +152,19 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         telemetry.update();
 
-        grabberPrimer.open();
         drivetrain.stopMoving();
         sleep(1000);
 
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
         sleep(200);
+
+        raiser.outtakeGlyph();
 
         drivetrain.stopMoving();
         sleep(200);
 
-        wiggle();
-        wiggle();
-
         // PULL OUT (Once)
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(150);
         this.drivetrain.stopMoving();
 
@@ -182,7 +178,7 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         telemetry.update();
 
-        grabberPrimer.open();
+        this.raiser.outtakeGlyph();
         drivetrain.stopMoving();
         sleep(1000);
 
@@ -232,13 +228,14 @@ public class BlueRight extends LinearOpMode implements Settings{
         this.drivetrain.stopMoving();
         sleep(500);
 
-        this.grabberPrimer.grab();
-        sleep(750);
+        this.intake.startIntake();
+        sleep(1000);
+        this.intake.stopIntake();
 
-        this.raiser.setPower(1);
+        this.raiser.getY().setPower(1);
         sleep(200);
 
-        this.raiser.setPower(0);
+        this.raiser.getY().setPower(0);
         sleep(500);
     }
 
