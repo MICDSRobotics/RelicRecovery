@@ -73,8 +73,6 @@ public class BlueLeft extends LinearOpMode implements Settings{
         raiser.retractFlipper();
         intake.flipInIntake();
 
-        intake.getRotation().setPosition(0.9);
-
         telemetry.update();
 
         waitForStart();
@@ -143,7 +141,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         robot.stopMoving();
         sleep(1000);
 
-        drivetrain.setAngle(imuWrapper, 0);
+        drivetrain.setAngle(imuWrapper, Math.PI);
         sleep(1000);
 
         //STEP 5: SCORE GLYPH INTO CORRECT COLUMN
@@ -168,17 +166,16 @@ public class BlueLeft extends LinearOpMode implements Settings{
         drivetrain.stopMoving();
         sleep(1000);
 
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
         sleep(200);
 
         drivetrain.stopMoving();
         sleep(200);
 
-        wiggle();
-        wiggle();
+        raiser.outtakeGlyph();
 
         // Move awy from glyph so it counts
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(150);
         this.drivetrain.stopMoving();
 
