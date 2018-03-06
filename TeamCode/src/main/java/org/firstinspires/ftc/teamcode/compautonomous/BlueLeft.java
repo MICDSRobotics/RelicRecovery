@@ -56,11 +56,11 @@ public class BlueLeft extends LinearOpMode implements Settings{
         armExtender = hardwareMap.servo.get("armExtender");
 
         grabberPrimer.initSystem();
-        armRotator.scaleRange(0.1, 0.9);
-        armExtender.scaleRange(0.16, 0.9);
+        armRotator.scaleRange(0.158, 0.7);
+        armExtender.scaleRange(0.16, 0.95);
 
         armExtender.setPosition(1.0);
-        armRotator.setPosition(0.5);
+        armRotator.setPosition(1.0);
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
@@ -82,9 +82,10 @@ public class BlueLeft extends LinearOpMode implements Settings{
         telemetry.update();
 
         //STEP 2: Hitting the jewel
+        armRotator.setPosition(0.5);
+        sleep(1000);
         armExtender.setPosition(0); //servo in 'out' position
-
-        sleep(2000);
+        sleep(1500);
 
         telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
         //Checks that blue jewel is closer towards the cryptoboxes (assuming color sensor is facing forward
