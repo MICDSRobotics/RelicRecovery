@@ -55,24 +55,22 @@ public class BlueRight extends LinearOpMode implements Settings{
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
 
-        //Assuming other hardware not yet on the robot
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
+        //Prepare hardware
         armRotator.scaleRange(0.158, 0.7);
         armExtender.scaleRange(0.16, 0.95);
 
-        armExtender.setPosition(0.8);
+        armExtender.setPosition(1.0);
         armRotator.setPosition(1.0);
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        raiser.getX().retractOuttake();
+        raiser.retractFlipper();
         intake.flipInIntake();
-
-        intake.getRotation().setPosition(0.9);
 
         telemetry.update();
 
@@ -110,12 +108,10 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         sleep(1000);
 
-        armExtender.setPosition(1);
-        armRotator.setPosition(1);
+        armExtender.setPosition(0.8);
+        armRotator.setPosition(0.5);
 
         sleep(1000);
-
-        //imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
 
         // move backwards and slam into the wall
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); // move backwards
@@ -130,7 +126,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         //Face cryptobox
-        drivetrain.setAngle(imuWrapper, -(float)Math.PI/2);
+        drivetrain.setAngle(imuWrapper, -Math.PI/2);
         sleep(1000);
 
         switch (relicRecoveryVuMark) {
@@ -261,7 +257,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         switch (relicRecoveryVuMark) {
             case LEFT: // maybe use the 'right' case?
                 telemetry.addData("Column", "Putting it in the center");
-                this.drivetrain.setAngle(imuWrapper, (float)MecanumDrive.Direction.UP.angle());
+                this.drivetrain.setAngle(imuWrapper, MecanumDrive.Direction.UP.angle());
                 break;
             case CENTER:
                 telemetry.addData("Column", "Putting it in the right");

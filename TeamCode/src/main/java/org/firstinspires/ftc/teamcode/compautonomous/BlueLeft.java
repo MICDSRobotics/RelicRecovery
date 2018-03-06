@@ -10,6 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
@@ -25,12 +27,15 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 public class BlueLeft extends LinearOpMode implements Settings{
 
     private Robot robot;
-    private DcMotor raiser;
-    private Servo grabber;
     private MecanumDrive drivetrain;
+
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
-    private GrabberPrimer grabberPrimer;
+
+    private double voltage;
 
     private Servo armExtender;
     private Servo armRotator;
@@ -44,18 +49,17 @@ public class BlueLeft extends LinearOpMode implements Settings{
         //Initialize hardware
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
+
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
+
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
-        grabberPrimer = new GrabberPrimer(this.grabber);
 
-
-        //Assuming other hardware not yet on the robot
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
-        grabberPrimer.initSystem();
+        //Prepare hardware
         armRotator.scaleRange(0.158, 0.7);
         armExtender.scaleRange(0.16, 0.95);
 
@@ -66,10 +70,14 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        waitForStart();
+        raiser.retractFlipper();
+        intake.flipInIntake();
 
-        //grab the block before moving off balancing stone
-        grabberPrimer.grab();
+        intake.getRotation().setPosition(0.9);
+
+        telemetry.update();
+
+        waitForStart();
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
@@ -83,6 +91,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         //STEP 2: Hitting the jewel
         armRotator.setPosition(0.5);
+        armExtender.setPosition(0.8);
         sleep(1000);
         armExtender.setPosition(0); //servo in 'out' position
         sleep(1500);
@@ -102,11 +111,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         sleep(1000);
 
-        raiser.setPower(1);
-        sleep(150);
-        raiser.setPower(0);
-
-        armExtender.setPosition(1);
+        armExtender.setPosition(0.8);
         armRotator.setPosition(0.5);
 
         sleep(1000);
@@ -160,7 +165,6 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         telemetry.update();
 
-        grabberPrimer.open();
         drivetrain.stopMoving();
         sleep(1000);
 

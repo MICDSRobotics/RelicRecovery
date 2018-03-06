@@ -27,9 +27,11 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 public class RedLeft extends LinearOpMode implements Settings {
 
     private Robot robot;
-    private ComplexRaiser complexRaiser;
-    private FlipperIntake flipperIntake;
     private MecanumDrive drivetrain;
+
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
 
@@ -47,15 +49,17 @@ public class RedLeft extends LinearOpMode implements Settings {
         //Initialize hardware
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
-        this.complexRaiser = new ComplexRaiser(hardwareMap);
-        this.flipperIntake = new FlipperIntake(hardwareMap);
+
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
+
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
 
-        //Assuming other hardware not yet on the robot
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
+        //Prepare hardware
         armRotator.scaleRange(0.158, 0.7);
         armExtender.scaleRange(0.16, 0.95);
 
@@ -65,6 +69,13 @@ public class RedLeft extends LinearOpMode implements Settings {
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
+
+        raiser.retractFlipper();
+        intake.flipInIntake();
+
+        intake.getRotation().setPosition(0.9);
+
+        telemetry.update();
 
         waitForStart();
 
@@ -80,12 +91,12 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         //STEP 2: Hitting the jewel
         armRotator.setPosition(0.5);
+        armExtender.setPosition(0.8);
         sleep(1000);
         armExtender.setPosition(0); //servo in 'out' position
         sleep(1500);
 
         telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
-
         //Checks that blue jewel is closer towards the cryptoboxes (assuming color sensor is facing forward
         if (Math.abs(colorSensorWrapper.getRGBValues()[2] - colorSensorWrapper.getRGBValues()[0]) < 30) {
             telemetry.addData("Jewels", "Too close.");
@@ -97,16 +108,13 @@ public class RedLeft extends LinearOpMode implements Settings {
             telemetry.addData("Jewels", "Red Team!");
         }
         telemetry.update();
-        sleep(500);
 
-        armExtender.setPosition(1);
+        sleep(1000);
+
+        armExtender.setPosition(0.8);
         armRotator.setPosition(0.5);
 
-        sleep(500);
-
-        this.complexRaiser.raiseUp();
-        sleep(500);
-        this.complexRaiser.stop();
+        sleep(1000);
 
         // Move backwards off balancing stone
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
@@ -117,7 +125,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(100);
 
         //Turn 90 degrees to face cryptobox
-        drivetrain.setAngle(imuWrapper, -(float)Math.PI/2);
+        drivetrain.setAngle(imuWrapper, -Math.PI/2);
         sleep(500);
 
         // Move in front of correct cryptobox column
@@ -138,7 +146,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         telemetry.update();
 
-        this.complexRaiser.getX().spitOutGlyph();
+        raiser.outtakeGlyph();
         drivetrain.stopMoving();
         sleep(500);
 
@@ -177,9 +185,9 @@ public class RedLeft extends LinearOpMode implements Settings {
                 break;
         }
 
-        this.complexRaiser.lower();
+        raiser.lower();
         sleep(450);
-        this.complexRaiser.stop();
+        raiser.stop();
 
         this.attemptToGetMultiBlock();
 
@@ -188,7 +196,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         //REPEAT PUTTING BLOCK IN THE THING
         //Turn 90 degrees to face cryptobox
-        drivetrain.setAngle(imuWrapper, (float)Math.PI/2);
+        drivetrain.setAngle(imuWrapper, Math.PI/2);
         sleep(500);
 
         // Move in front of correct cryptobox column
@@ -212,10 +220,10 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
         sleep(200);
 
-        this.complexRaiser.getX().spitOutGlyph();
+        raiser.outtakeGlyph();
         drivetrain.stopMoving();
         sleep(500);
-        this.complexRaiser.getX().retractOuttake();
+        raiser.retractFlipper();
 
         // PULL OUT (Once)
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
@@ -235,7 +243,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
     public void attemptToGetMultiBlock() {
         // Face glyph horde using the gyro
-        this.drivetrain.setAngle(this.imuWrapper, (float)(-Math.PI/2));
+        this.drivetrain.setAngle(this.imuWrapper, -Math.PI/2);
         // briefly ram into the block pile
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(1000);
@@ -243,18 +251,18 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(500);
 
         // Attempt to pick up a block
-        this.flipperIntake.startIntake();
+        intake.startIntake();
         sleep(500);
-        this.complexRaiser.getX().spitOutGlyph();
+        raiser.outtakeGlyph();
         sleep(500);
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
         sleep(100);
         drivetrain.stopMoving();
 
         //Raise up
-        this.complexRaiser.raiseUp();
+        raiser.raiseUp();
         sleep(600);
-        this.complexRaiser.stop();
+        raiser.stop();
         sleep(200);
         // Move back towards cryptobox
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
