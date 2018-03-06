@@ -69,9 +69,8 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        raiser.getX().initOuttake();
-        intake.initIntake();
-        this.intake.flipInIntake();
+        raiser.getX().retractOuttake();
+        intake.flipInIntake();
 
         intake.getRotation().setPosition(0.9);
 
