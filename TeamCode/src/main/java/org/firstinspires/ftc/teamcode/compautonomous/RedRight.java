@@ -136,13 +136,14 @@ public class RedRight extends LinearOpMode implements Settings {
 
         telemetry.update();
 
-        raiser.outtakeGlyph();
         drivetrain.stopMoving();
         sleep(1000);
 
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
+        sleep(500);
+        raiser.outtakeGlyph();
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
         sleep(200);
-
         drivetrain.stopMoving();
         sleep(200);
 
@@ -150,7 +151,7 @@ public class RedRight extends LinearOpMode implements Settings {
         wiggle();
 
         // PULL OUT
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(200);
         this.drivetrain.stopMoving();
 
