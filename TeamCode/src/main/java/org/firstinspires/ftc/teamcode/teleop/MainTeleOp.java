@@ -31,15 +31,12 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
-import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
@@ -106,6 +103,8 @@ public class MainTeleOp extends OpMode
         counts = 0;
         toggleboi = false;
 
+        armExtender.setPosition(0.8);
+        armRotator.setPosition(0.5);
     }
 
     /*
@@ -200,12 +199,7 @@ public class MainTeleOp extends OpMode
             }
             // twitch thing
             if (p1.x.isDown()) {
-                this.intake.flipInIntake();
-                counts++;
-                if(counts >= 100) {
-                    this.intake.flipOutIntake();
-                    counts = 0;
-                }
+                this.intake.reverseIntake();
             }
 
         } else {
