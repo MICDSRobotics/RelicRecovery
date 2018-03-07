@@ -71,7 +71,6 @@ public class BlueLeft extends LinearOpMode implements Settings{
         vuforiaWrapper.getLoader().getTrackables().activate();
 
         raiser.retractFlipper();
-        intake.flipInIntake();
 
         telemetry.update();
 
@@ -114,12 +113,14 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         sleep(1000);
 
+        this.intake.flipInIntake();
         // STEP 3: MOVE OFF BALANCING STONE
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 115));
         this.drivetrain.stopMoving();
+        this.intake.stopIntake();
         sleep(100);
 
         robot.stopMoving();

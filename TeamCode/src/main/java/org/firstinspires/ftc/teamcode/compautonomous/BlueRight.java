@@ -120,7 +120,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         // 170
         sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 185));
         this.drivetrain.stopMoving();
-        this.intake.flipOutIntake();
+        this.intake.stopIntake();
         sleep(100);
 
         robot.stopMoving();

@@ -71,7 +71,6 @@ public class RedLeft extends LinearOpMode implements Settings {
         vuforiaWrapper.getLoader().getTrackables().activate();
 
         raiser.retractFlipper();
-        intake.flipInIntake();
 
         telemetry.update();
 
@@ -121,6 +120,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 160));
         this.drivetrain.stopMoving();
+        this.intake.stopIntake();
         sleep(100);
 
         //Turn 90 degrees to face cryptobox

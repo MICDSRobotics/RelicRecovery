@@ -59,6 +59,7 @@ public class MainTeleOp extends OpMode
 {
 
     private int counts;
+    private boolean toggleboi;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -103,6 +104,7 @@ public class MainTeleOp extends OpMode
         armExtender.scaleRange(0.16, 0.95);
 
         counts = 0;
+        toggleboi = false;
 
     }
 
@@ -210,11 +212,12 @@ public class MainTeleOp extends OpMode
 
             // intake stuff
             if (p1.leftBumper == PRESSED) {
-                if (intake.getRotation().getCurrentPosition() < 100) { // TODO: fix the current position
+                if (toggleboi) { // TODO: fix the current position
                     intake.flipOutIntake();
                 } else {
                     intake.flipInIntake();
                 }
+                toggleboi = !toggleboi;
             }
             if (p1.rightBumper == PRESSED) {
                 if (intake.getIntake().getPower() >= 0) {
@@ -268,6 +271,7 @@ public class MainTeleOp extends OpMode
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
         telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
+        telemetry.addData("Intake Flipper Power", intake.getRotation().getPower());
 
         telemetry.update();
         p1.update();

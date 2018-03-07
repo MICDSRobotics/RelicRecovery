@@ -113,11 +113,13 @@ public class RedRight extends LinearOpMode implements Settings {
         sleep(1000);
 
         // move backwards and slam into the wall
+        this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         sleep(TimeOffsetVoltage.calculateDistance(voltage, 115));
         this.drivetrain.stopMoving();
+        this.intake.stopIntake();
         sleep(100);
 
         // TODO: Investigate using not full velocity and see if that will allow the robot to move forward but not onto the stone
