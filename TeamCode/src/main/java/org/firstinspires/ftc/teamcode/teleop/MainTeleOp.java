@@ -34,9 +34,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
@@ -71,6 +73,7 @@ public class MainTeleOp extends OpMode
 
     private ComplexRaiser raiser;
     private FlipperIntake intake;
+    private IMUWrapper imuWrapper;
 
     private Servo armRotator;
     private Servo armExtender;
@@ -93,6 +96,7 @@ public class MainTeleOp extends OpMode
 
         raiser = new ComplexRaiser(hardwareMap);
         intake = new FlipperIntake(hardwareMap);
+        imuWrapper = new IMUWrapper(hardwareMap);
 
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
@@ -133,18 +137,22 @@ public class MainTeleOp extends OpMode
         //Drivetrain switching & low speed
         if (accessControl.isG2Primary()) {
             if (this.lowSpeed) {
-                drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+                //drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
             else {
-                drivetrain.complexDrive(gamepad2, telemetry);
+                //drivetrain.complexDrive(gamepad2, telemetry);
+                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
         else {
             if (this.lowSpeed) {
-                drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+                //drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
             else {
-                drivetrain.complexDrive(gamepad1, telemetry);
+                //drivetrain.complexDrive(gamepad1, telemetry);
+                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
 
