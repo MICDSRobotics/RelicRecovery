@@ -138,7 +138,7 @@ public class MainTeleOp extends OpMode
         if (accessControl.isG2Primary()) {
             if (this.lowSpeed) {
                 //drivetrain.complexDrive(gamepad2, telemetry, 0.5);
-                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
                 //drivetrain.complexDrive(gamepad2, telemetry);
@@ -148,7 +148,7 @@ public class MainTeleOp extends OpMode
         else {
             if (this.lowSpeed) {
                 //drivetrain.complexDrive(gamepad1, telemetry, 0.5);
-                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
                 //drivetrain.complexDrive(gamepad1, telemetry);
@@ -205,9 +205,16 @@ public class MainTeleOp extends OpMode
             if (p1.rightBumper.isDown()) {
                 raiser.outtakeGlyph();
             }
-            // twitch thing
+
+            // clear intake if in bad situation
             if (p1.x.isDown()) {
                 this.intake.reverseIntake();
+            }
+
+            // recalibrate IMU
+            if (p1.b == PRESSED) {
+                imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
+                telemetry.addData("reset", "Trying to recalibrate");
             }
 
         } else {
@@ -241,14 +248,16 @@ public class MainTeleOp extends OpMode
             if (p2.rightBumper.isDown()) {
                 raiser.outtakeGlyph();
             }
-            //twitch thing
-            if (p1.x.isDown()) {
-                this.intake.flipInIntake();
-                counts++;
-                if(counts >= 100) {
-                    this.intake.flipOutIntake();
-                    counts = 0;
-                }
+
+            // clear intake if in bad situation
+            if (p2.x.isDown()) {
+                this.intake.reverseIntake();
+            }
+
+            // recalibrate IMU
+            if (p2.b == PRESSED) {
+                imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
+                telemetry.addData("reset", "Trying to recalibrate");
             }
 
         } else {

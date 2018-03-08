@@ -118,7 +118,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         // 78cm
         this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         // 170
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 185));
+        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 170));
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
         sleep(100);
