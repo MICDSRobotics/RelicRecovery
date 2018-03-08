@@ -118,7 +118,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
         // 160cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 160));
+        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 175));
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
         sleep(100);
@@ -135,18 +135,22 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(500);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(200);
+        sleep(500);
         raiser.outtakeGlyph();
+        sleep(700);
 
         drivetrain.stopMoving();
         sleep(200);
 
         wiggle();
-        wiggle();
 
-        // PULL OUT (Once)
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(150);
+        sleep(350);
+        this.drivetrain.stopMoving();
+
+        // pull out
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(300);
         this.drivetrain.stopMoving();
 
         telemetry.update();

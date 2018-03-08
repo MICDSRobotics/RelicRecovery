@@ -128,36 +128,79 @@ public class RedRight extends LinearOpMode implements Settings {
         this.drivetrain.stopMoving();
         sleep(1000);
 
+        //THIS IS THE DISTANCE TO BE CHANGED
         this.drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1, 0);
-        sleep(sideShort + 100);
+        sleep(sideShort - 200); // -100
         this.drivetrain.stopMoving();
+        sleep(500);
 
         moveToCorrectColumn();
 
         telemetry.update();
 
         drivetrain.stopMoving();
-        sleep(1000);
+        sleep(500);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
         sleep(500);
+        this.drivetrain.stopMoving();
+        sleep(750);
         raiser.outtakeGlyph();
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(200);
+        sleep(700);
+
         drivetrain.stopMoving();
         sleep(200);
 
         wiggle();
-        wiggle();
 
-        // PULL OUT
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(350);
+        this.drivetrain.stopMoving();
+
+        // pull out
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(200);
+        sleep(300);
         this.drivetrain.stopMoving();
 
         telemetry.update();
-        sleep(1000);
-        // END
+
+        sleep(500);
+
+        //Move back to center of cryptobox tape (if necessary)
+        // START
+        /*moveToCorrectColumn();
+
+        raiser.lower();
+        sleep(450);
+        raiser.stop();
+
+        this.attemptToGetMultiBlock();
+
+        this.drivetrain.stopMoving();
+        sleep(200);
+
+        //REPEAT PUTTING BLOCK IN THE THING
+        //Turn 90 degrees to face cryptobox
+        drivetrain.setAngle(imuWrapper, Math.PI/2);
+        sleep(500);
+
+        moveToCorrectColumn();
+
+        telemetry.update();
+
+        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
+        sleep(200);
+
+        raiser.outtakeGlyph();
+        drivetrain.stopMoving();
+        sleep(500);
+        raiser.retractFlipper();
+
+        // PULL OUT (Once)
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(150);
+        this.drivetrain.stopMoving();
+        */
     }
 
     public void wiggle(){
