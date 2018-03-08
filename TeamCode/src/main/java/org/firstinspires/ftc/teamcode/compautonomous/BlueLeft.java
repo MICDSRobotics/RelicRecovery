@@ -118,7 +118,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 115));
+        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 170));
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
         sleep(100);
@@ -130,14 +130,14 @@ public class BlueLeft extends LinearOpMode implements Settings{
         sleep(1000);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(100);
+        sleep(750);
 
         robot.stopMoving();
         sleep(1000);
 
         //STEP 4: MOVE TOWARDS CRYPTOBOX
         drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1,0);
-        sleep(sideShort + 100);
+        sleep(sideShort - 100);
 
         robot.stopMoving();
         sleep(1000);
@@ -147,28 +147,35 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         //STEP 5: SCORE GLYPH INTO CORRECT COLUMN
         //Move to sides according to cryptobox key
-        moveToCorrectColumn();
-
         telemetry.update();
 
         drivetrain.stopMoving();
-        sleep(1000);
+        sleep(500);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(200);
+        sleep(500);
+        this.drivetrain.stopMoving();
+        sleep(750);
+        raiser.outtakeGlyph();
+        sleep(700);
 
         drivetrain.stopMoving();
         sleep(200);
 
-        raiser.outtakeGlyph();
+        wiggle();
 
-        // Move awy from glyph so it counts
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(350);
+        this.drivetrain.stopMoving();
+
+        // pull out
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(150);
+        sleep(300);
         this.drivetrain.stopMoving();
 
         telemetry.update();
-        sleep(1000);
+
+        sleep(500);
 
     }
 
