@@ -14,6 +14,7 @@ public interface Settings {
     int rotate90 = 475;
     //int lineUp = ;
     double slamIntoWallSpeed = 0.4;
+    int distanceToWall = 350;
 
 
     /* FIRST TEST VALUES (FULL BATTERY?)

@@ -96,7 +96,6 @@ public class MainTeleOp extends OpMode
 
         raiser = new ComplexRaiser(hardwareMap);
         intake = new FlipperIntake(hardwareMap);
-        imuWrapper = new IMUWrapper(hardwareMap);
 
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
@@ -107,8 +106,8 @@ public class MainTeleOp extends OpMode
         counts = 0;
         toggleboi = false;
 
-        armExtender.setPosition(0.8);
-        armRotator.setPosition(0.5);
+        //armExtender.setPosition(0.8);
+        //armRotator.setPosition(0.5);
     }
 
     /*
@@ -137,22 +136,22 @@ public class MainTeleOp extends OpMode
         //Drivetrain switching & low speed
         if (accessControl.isG2Primary()) {
             if (this.lowSpeed) {
-                //drivetrain.complexDrive(gamepad2, telemetry, 0.5);
-                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
+                drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+                //drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
-                //drivetrain.complexDrive(gamepad2, telemetry);
-                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+                drivetrain.complexDrive(gamepad2, telemetry);
+                //drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
         else {
             if (this.lowSpeed) {
-                //drivetrain.complexDrive(gamepad1, telemetry, 0.5);
-                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
+                drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+                //drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
-                //drivetrain.complexDrive(gamepad1, telemetry);
-                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+                drivetrain.complexDrive(gamepad1, telemetry);
+                //drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
 
@@ -207,7 +206,7 @@ public class MainTeleOp extends OpMode
             }
 
             // clear intake if in bad situation
-            if (p1.x.isDown()) {
+            if (p1.b.isDown()) {
                 this.intake.reverseIntake();
             }
 

@@ -31,39 +31,38 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
-import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
 
+import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller.Button.PRESSED;
+
+
 /**
- * This file contains an example of an iterative (Non-Linear) "OpMode".
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
- * The names of OpModes appear on the menu of the FTC Driver Station.
- * When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all iterative OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * Main Teleop Program for Competition
+ * @author Blake A, Alex M
+ * @since 1/4/2018
  */
 
-@TeleOp(name="Gyro Mecanum testing", group="Testing")
+@TeleOp(name="Mecanum Robot", group="Competition OpModes")
 //@Disabled
 public class GyroMecanum extends OpMode
 {
 
+    private int counts;
+    private boolean toggleboi;
+
     private ElapsedTime runtime = new ElapsedTime();
+
+    private boolean lowSpeed = false;
 
     private Robot robot;
 
@@ -72,24 +71,21 @@ public class GyroMecanum extends OpMode
 
     private MecanumDrive drivetrain;
 
-    private DcMotor raiser;
-    private Servo grabber;
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+    private IMUWrapper imuWrapper;
+
     private Servo armRotator;
     private Servo armExtender;
-    private GrabberPrimer grabberPrimer;
 
     private AccessControl accessControl = new AccessControl();
-
-    private boolean locking;
-    private boolean returning;
-
-    private IMUWrapper imuWrapper;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
+
         telemetry.addData("Status", "Initialized");
 
         p1 = new Controller(gamepad1);
@@ -98,21 +94,21 @@ public class GyroMecanum extends OpMode
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
-        grabberPrimer = new GrabberPrimer(grabber);
-
-        grabber.scaleRange(0.25, 1.0);
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
+        imuWrapper = new IMUWrapper(hardwareMap);
 
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
-        armRotator.scaleRange(0.1,0.9);
-        armExtender.scaleRange(0.16, 0.85);
+        armRotator.scaleRange(0.158, 0.7);
+        armExtender.scaleRange(0.16, 0.95);
 
-        raiser.setDirection(DcMotorSimple.Direction.FORWARD);
+        counts = 0;
+        toggleboi = false;
 
-        imuWrapper = new IMUWrapper(hardwareMap);
+        //armExtender.setPosition(0.8);
+        //armRotator.setPosition(0.5);
     }
 
     /*
@@ -137,55 +133,158 @@ public class GyroMecanum extends OpMode
     public void loop() {
 
         telemetry.addData("Status", "Running: " + runtime.toString());
+
+        //Drivetrain switching & low speed
+        if (accessControl.isG2Primary()) {
+            if (this.lowSpeed) {
+                //drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
+            }
+            else {
+                //drivetrain.complexDrive(gamepad2, telemetry);
+                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+            }
+        }
+        else {
+            if (this.lowSpeed) {
+                //drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
+            }
+            else {
+                //drivetrain.complexDrive(gamepad1, telemetry);
+                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+            }
+        }
+
+        if (p1.start == PRESSED || p2.start == PRESSED) {
+            accessControl.changeAccess();
+        }
+
         telemetry.addData("Access", accessControl.getTelemetryState());
 
-        telemetry.addData("Calibration:", imuWrapper.getIMU().getCalibrationStatus().toString());
-        telemetry.addData("Orientation:", imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).toString());
+        if (p1.x == PRESSED || p2.x == PRESSED) {
+            this.lowSpeed = !this.lowSpeed;
+        }
 
-        drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+        telemetry.addData("Slowmode", this.lowSpeed);
 
-        //Raise arm while the y button is held, lower it when a it held
-        if(p1.a.equals(Controller.Button.HELD) || p2.a.equals(Controller.Button.HELD)){
-            raiser.setPower(1);
-        } else if (p1.b.equals(Controller.Button.HELD) || p2.b.equals(Controller.Button.HELD)) {
-            raiser.setPower(-1);
+        //Raise outtake while the y button is held, lower it when a it held
+        if(p1.a.isDown() || p2.a.isDown()){
+            raiser.raiseUp();
+        } else if (p1.b.isDown() || p2.b.isDown()) {
+            raiser.lower();
         } else {
-            raiser.setPower(0);
+            raiser.stop();
         }
 
-        //Set grabber position
-        if(p1.leftBumper.equals(Controller.Button.PRESSED) || p2.leftBumper.equals(Controller.Button.PRESSED)){
-            grabberPrimer.open();
-        } else if (p1.rightBumper.equals(Controller.Button.PRESSED) || p2.rightBumper.equals(Controller.Button.PRESSED)){
-            grabberPrimer.grab();
-        }
-
-        //Set rotation servo positions
-        if(p1.dpadLeft.equals(Controller.Button.HELD) || p2.dpadLeft.equals(Controller.Button.HELD)){
+        //Set arm rotation servo positions
+        if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
-        } else if (p1.dpadRight.equals(Controller.Button.HELD) || p2.dpadRight.equals(Controller.Button.HELD)){
+        } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
         }
 
-        //Set extender servo positions
-        if(p1.dpadUp.equals(Controller.Button.HELD) || p2.dpadUp.equals(Controller.Button.HELD)){
+        telemetry.addData("ArmRotator Position", armRotator.getPosition());
+
+        //Set arm extender servo positions
+        if(p1.dpadUp.isDown() || p2.dpadUp.isDown()){
             armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
         } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
         }
 
-        // recalibrate IMU
-        if (p1.x.equals(Controller.Button.PRESSED) || p2.x.equals(Controller.Button.PRESSED)) {
-            imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
-            //idk if this actually works lol
-            telemetry.addData("reset", "Trying to recalibrate");
-        }
-
-        telemetry.addData("Grabber Position", grabber.getPosition());
-
-        telemetry.addData("ArmRotator Position", armRotator.getPosition());
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
 
+        // p1 shifted controls
+        if(p1.y.isDown()){
+
+            // outtake stuff
+            if (p1.leftBumper.isDown()) {
+                raiser.retractFlipper();
+            }
+            if (p1.rightBumper.isDown()) {
+                raiser.outtakeGlyph();
+            }
+
+            // clear intake if in bad situation
+            if (p1.x.isDown()) {
+                this.intake.reverseIntake();
+            }
+
+            // recalibrate IMU
+            if (p1.b == PRESSED) {
+                imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
+                telemetry.addData("reset", "Trying to recalibrate");
+            }
+
+        } else {
+
+            // intake stuff
+            if (p1.leftBumper == PRESSED) {
+                if (toggleboi) { // TODO: fix the current position
+                    intake.flipOutIntake();
+                } else {
+                    intake.flipInIntake();
+                }
+                toggleboi = !toggleboi;
+            }
+            if (p1.rightBumper == PRESSED) {
+                if (intake.getIntake().getPower() >= 0) {
+                    intake.startIntake();
+                } else {
+                    intake.stopIntake();
+                }
+            }
+
+        }
+
+        //p2 shifted controls
+        if(p2.y.isDown()){
+
+            // outtake stuff
+            if (p2.leftBumper.isDown()) {
+                raiser.retractFlipper();
+            }
+            if (p2.rightBumper.isDown()) {
+                raiser.outtakeGlyph();
+            }
+
+            // clear intake if in bad situation
+            if (p2.x.isDown()) {
+                this.intake.reverseIntake();
+            }
+
+            // recalibrate IMU
+            if (p2.b == PRESSED) {
+                imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
+                telemetry.addData("reset", "Trying to recalibrate");
+            }
+
+        } else {
+
+            // intake stuff
+            if (p2.leftBumper == PRESSED) {
+                if (intake.getRotation().getCurrentPosition() < 100) { // TODO: fix the current position bound
+                    intake.flipOutIntake();
+                } else {
+                    intake.flipInIntake();
+                }
+            }
+            if (p2.rightBumper == PRESSED) {
+                if (intake.getIntake().getPower() >= 0) {
+                    intake.startIntake();
+                } else {
+                    intake.stopIntake();
+                }
+            }
+
+        }
+
+        telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
+        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
+        telemetry.addData("Intake Flipper Power", intake.getRotation().getPower());
+
+        telemetry.update();
         p1.update();
         p2.update();
 
@@ -196,6 +295,7 @@ public class GyroMecanum extends OpMode
      */
     @Override
     public void stop() {
+        robot.stopMoving();
     }
 
 }

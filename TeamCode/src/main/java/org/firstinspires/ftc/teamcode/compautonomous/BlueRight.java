@@ -143,7 +143,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(500);
+        sleep(distanceToWall);
 
         this.armExtender.setPosition(0.79);
         this.armRotator.setPosition(0.309);
@@ -158,7 +158,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(350);
+        sleep(distanceToWall + 150);
         this.drivetrain.stopMoving();
 
         sleep(750);
@@ -166,32 +166,26 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(350);
         this.drivetrain.stopMoving();
 
-        /*this.attemptToGetMultiBlock();
-        this.moveAwayFromPit();
-        this.placeMultiBlock();
-
-        telemetry.update();
-
-        this.raiser.outtakeGlyph();
-        drivetrain.stopMoving();
-        sleep(1000);
-
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
-        sleep(750);
-
-        drivetrain.stopMoving();
-        sleep(200);
-
-        wiggle();
-        wiggle();*/
+        // TODO: REMOVE IF NOT WORK THIS IS PSEUDO CODE
+        this.attemptToGetMultiBlock();
+        sleep(500);
+        this.moveToCorrectColumn();
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(350);
+        this.drivetrain.stopMoving();
+        // pull out
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(300);
+        this.drivetrain.stopMoving();
     }
 
+    //Method to help guard against glyph getting stuck between columns
     public void wiggle(){
-        drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle() + 0.5, 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNLEFT.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle() - 0.5, 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
         sleep(150);
     }
 
@@ -199,16 +193,18 @@ public class BlueRight extends LinearOpMode implements Settings{
         switch (relicRecoveryVuMark) {
             case LEFT:
                 telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, -Math.PI * 11 / 12);
                 break;
             case CENTER:
                 telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT:
                 telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, Math.PI * 11 / 12);
                 break;
             default:
                 break;
@@ -216,74 +212,29 @@ public class BlueRight extends LinearOpMode implements Settings{
     }
 
     public void attemptToGetMultiBlock() {
+        // Face glyph horde using the gyro
+        this.drivetrain.setAngle(this.imuWrapper, -Math.PI/2);
+        // briefly ram into the block pile
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(this.voltage, 20));
-        this.drivetrain.stopMoving();
         sleep(1000);
-
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(750);
         this.drivetrain.stopMoving();
         sleep(500);
 
-        this.intake.startIntake();
+        // Attempt to pick up a block
+        intake.startIntake();
         sleep(1000);
-        this.intake.stopIntake();
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
+        sleep(100);
+        drivetrain.stopMoving();
 
-        this.raiser.getY().setPower(1);
+        //Raise up
+        raiser.raiseUp();
         sleep(200);
-
-        this.raiser.getY().setPower(0);
-        sleep(500);
-    }
-
-    public void moveAwayFromPit() {
+        raiser.stop();
+        sleep(200);
+        // Move back towards cryptobox
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(voltage, 90));
-        this.drivetrain.stopMoving();
-        this.raiser.outtakeGlyph();
-        sleep(750);
-        this.raiser.retractFlipper();
-    }
-
-    public void placeMultiBlock() {
-        /*
-        switch (relicRecoveryVuMark) {
-            case LEFT:
-                telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
-                break;
-            case CENTER:
-                telemetry.addData("Column", "Putting it in the center");
-                break;
-            case RIGHT:
-                telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
-                break;
-            default:
-                break;
-        }
-         */
-
-        switch (relicRecoveryVuMark) {
-            case LEFT: // maybe use the 'right' case?
-                telemetry.addData("Column", "Putting it in the center");
-                this.drivetrain.setAngle(imuWrapper, MecanumDrive.Direction.UP.angle());
-                break;
-            case CENTER:
-                telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
-                break;
-            case RIGHT:
-                telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
-                break;
-            default:
-                break;
-        }
+        sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 70));
+        drivetrain.stopMoving();
     }
 }

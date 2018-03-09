@@ -137,7 +137,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         telemetry.update();
 
         drivetrain.stopMoving();
-        sleep(500);
+        sleep(distanceToWall);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
         sleep(500);
@@ -150,7 +150,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         wiggle();
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(350);
+        sleep(distanceToWall + 150);
         this.drivetrain.stopMoving();
 
         // pull out
@@ -162,49 +162,26 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         sleep(500);
 
-        //Move back to center of cryptobox tape (if necessary)
-        // START
-        /*moveToCorrectColumn();
-
-        raiser.lower();
-        sleep(450);
-        raiser.stop();
-
-        this.attemptToGetMultiBlock();
-
-        this.drivetrain.stopMoving();
-        sleep(200);
-
-        //REPEAT PUTTING BLOCK IN THE THING
-        //Turn 90 degrees to face cryptobox
-        drivetrain.setAngle(imuWrapper, Math.PI/2);
+        // TODO: REMOVE IF NOT WORK THIS IS PSEUDO CODE
+        /*this.attemptToGetMultiBlock();
         sleep(500);
-
-        moveToCorrectColumn();
-
-        telemetry.update();
-
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
-        sleep(200);
-
-        raiser.outtakeGlyph();
-        drivetrain.stopMoving();
-        sleep(500);
-        raiser.retractFlipper();
-
-        // PULL OUT (Once)
+        //this.moveToCorrectColumn();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(150);
+        sleep(350);
         this.drivetrain.stopMoving();
-        */
+        // pull out
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(300);
+        this.drivetrain.stopMoving();*/
     }
 
+    //Method to help guard against glyph getting stuck between columns
     public void wiggle(){
-        drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNLEFT.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
         sleep(150);
     }
 
@@ -212,16 +189,18 @@ public class RedLeft extends LinearOpMode implements Settings {
         switch (relicRecoveryVuMark) {
             case LEFT:
                 telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, -Math.PI * 11 / 12);
                 break;
             case CENTER:
                 telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT:
                 telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, Math.PI * 11 / 12);
                 break;
             default:
                 break;
@@ -239,21 +218,19 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         // Attempt to pick up a block
         intake.startIntake();
-        sleep(500);
-        raiser.outtakeGlyph();
-        sleep(500);
+        sleep(1000);
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
         sleep(100);
         drivetrain.stopMoving();
 
         //Raise up
         raiser.raiseUp();
-        sleep(600);
+        sleep(200);
         raiser.stop();
         sleep(200);
         // Move back towards cryptobox
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 70));
+        sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 110));
         drivetrain.stopMoving();
     }
 }

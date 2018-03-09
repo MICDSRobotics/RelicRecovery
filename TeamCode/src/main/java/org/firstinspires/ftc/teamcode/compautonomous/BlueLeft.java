@@ -159,7 +159,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         sleep(500);
 
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(500);
+        sleep(distanceToWall);
         this.drivetrain.stopMoving();
         sleep(750);
         raiser.outtakeGlyph();
@@ -171,7 +171,7 @@ public class BlueLeft extends LinearOpMode implements Settings{
         wiggle();
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(350);
+        sleep(distanceToWall + 150);
         this.drivetrain.stopMoving();
 
         // pull out
@@ -187,11 +187,11 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
     //Method to help guard against glyph getting stuck between columns
     public void wiggle(){
-        drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNLEFT.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
         sleep(150);
     }
 
@@ -199,20 +199,21 @@ public class BlueLeft extends LinearOpMode implements Settings{
         switch (relicRecoveryVuMark) {
             case LEFT:
                 telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, -Math.PI * 11 / 12);
                 break;
             case CENTER:
                 telemetry.addData("Column", "Putting it in the center");
                 break;
             case RIGHT:
                 telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long) (1100 + sideShort));
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, Math.PI * 11 / 12);
                 break;
             default:
                 break;
         }
     }
-
 }
