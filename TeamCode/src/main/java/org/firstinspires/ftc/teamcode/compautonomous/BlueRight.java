@@ -130,6 +130,11 @@ public class BlueRight extends LinearOpMode implements Settings{
         drivetrain.setAngle(imuWrapper, -Math.PI/2);
         sleep(1000);
 
+        //Lower raiser a bit
+        this.raiser.lower();
+        sleep(500);
+        this.raiser.stop();
+
         moveToCorrectColumn();
 
         telemetry.update();

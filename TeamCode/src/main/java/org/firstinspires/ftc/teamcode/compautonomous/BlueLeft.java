@@ -145,8 +145,14 @@ public class BlueLeft extends LinearOpMode implements Settings{
         drivetrain.setAngle(imuWrapper, Math.PI);
         sleep(1000);
 
+        //Lower raiser a bit
+        this.raiser.lower();
+        sleep(500);
+        this.raiser.stop();
+
         //STEP 5: SCORE GLYPH INTO CORRECT COLUMN
         //Move to sides according to cryptobox key
+        moveToCorrectColumn();
         telemetry.update();
 
         drivetrain.stopMoving();

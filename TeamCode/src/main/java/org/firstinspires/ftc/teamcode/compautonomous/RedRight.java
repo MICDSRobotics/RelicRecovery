@@ -134,6 +134,13 @@ public class RedRight extends LinearOpMode implements Settings {
         this.drivetrain.stopMoving();
         sleep(500);
 
+        drivetrain.setAngle(imuWrapper, 0);
+
+        //Lower raiser a bit
+        this.raiser.lower();
+        sleep(500);
+        this.raiser.stop();
+
         moveToCorrectColumn();
 
         telemetry.update();
