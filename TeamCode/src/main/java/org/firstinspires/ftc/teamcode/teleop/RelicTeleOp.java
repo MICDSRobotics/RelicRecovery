@@ -37,9 +37,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.autonomous.lib.ProfileMap;
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.Outtake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
 
@@ -52,12 +56,15 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
  * @since 1/4/2018
  */
 
-@TeleOp(name="Relic Grabbing", group="YUH YUH")
+@TeleOp(name="Relic Grabber Bot", group="Gogo gadget extendo arm")
 //@Disabled
 public class RelicTeleOp extends OpMode
 {
+    private int counts;
 
     private ElapsedTime runtime = new ElapsedTime();
+
+    private boolean lowSpeed = false;
 
     private Robot robot;
 
@@ -66,13 +73,16 @@ public class RelicTeleOp extends OpMode
 
     private MecanumDrive drivetrain;
 
-    private DcMotor raiser;
-    private Servo grabber;
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+
     private Servo armRotator;
     private Servo armExtender;
-    private GrabberPrimer grabberPrimer;
 
-    private CRServo relic;
+    //Relic stuff
+    private CRServo grabberExtender;
+    private Servo grabberWrist;
+    private Servo grabberHand;
 
     private AccessControl accessControl = new AccessControl();
 
@@ -89,22 +99,20 @@ public class RelicTeleOp extends OpMode
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
-        grabberPrimer = new GrabberPrimer(grabber);
-
-        grabber.scaleRange(0.25, 1.0);
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
 
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
-        armRotator.scaleRange(0.1,0.9);
-        armExtender.scaleRange(0.16, 0.85);
+        armRotator.scaleRange(0.158, 0.7);
+        armExtender.scaleRange(0.16, 0.95);
 
-        raiser.setDirection(DcMotorSimple.Direction.FORWARD);
+        grabberExtender = hardwareMap.crservo.get("grabberExtender");
+        grabberWrist = hardwareMap.servo.get("grabberWrist");
+        grabberHand = hardwareMap.servo.get("grabberHand");
 
-        relic = hardwareMap.crservo.get("relic");
-
+        counts = 0;
     }
 
     /*
@@ -129,64 +137,142 @@ public class RelicTeleOp extends OpMode
     public void loop() {
 
         telemetry.addData("Status", "Running: " + runtime.toString());
-        telemetry.addData("Access", accessControl.getTelemetryState());
 
+        //Drivetrain switching & low speed
         if (accessControl.isG2Primary()) {
-            drivetrain.complexDrive(gamepad2, telemetry);
+            if (this.lowSpeed) {
+                drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+            }
+            else {
+                drivetrain.complexDrive(gamepad2, telemetry);
+            }
         }
         else {
-            drivetrain.complexDrive(gamepad1, telemetry);
+            if (this.lowSpeed) {
+                drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+            }
+            else {
+                drivetrain.complexDrive(gamepad1, telemetry);
+            }
         }
 
         if (p1.start == PRESSED || p2.start == PRESSED) {
             accessControl.changeAccess();
         }
 
-        //Raise arm while the y button is held, lower it when a it held
+        telemetry.addData("Access", accessControl.getTelemetryState());
+
+        if (p1.x == PRESSED || p2.x == PRESSED) {
+            this.lowSpeed = !this.lowSpeed;
+        }
+
+        telemetry.addData("Slowmode", this.lowSpeed);
+
+        //Raise outtake while the y button is held, lower it when a it held
         if(p1.a.isDown() || p2.a.isDown()){
-            raiser.setPower(1);
+            raiser.raiseUp();
         } else if (p1.b.isDown() || p2.b.isDown()) {
-            raiser.setPower(-1);
+            raiser.lower();
         } else {
-            raiser.setPower(0);
+            raiser.stop();
         }
 
-        //Set grabber position
-        if(p1.leftBumper == PRESSED || p2.leftBumper == PRESSED){
-            grabberPrimer.open();
-        } else if (p1.rightBumper == PRESSED || p2.rightBumper == PRESSED){
-            grabberPrimer.grab();
-        }
-
-        //Set rotation servo positions
+        //Set arm rotation servo positions
         if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
         } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
         }
 
-        //Set extender servo positions
+        telemetry.addData("ArmRotator Position", armRotator.getPosition());
+
+        //Set arm extender servo positions
         if(p1.dpadUp.isDown() || p2.dpadUp.isDown()){
             armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
         } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
         }
 
-        if (p1.x.isDown()|| p2.x.isDown()) {
-            relic.setPower(1);
-        } else if (p1.y.isDown() || p2.y.isDown()) {
-            relic.setPower(-1);
-        } else {
-            relic.setPower(0);
-        }
-
-        telemetry.addData("Relic", relic.getPower());
-
-        telemetry.addData("Grabber Position", grabber.getPosition());
-
-        telemetry.addData("ArmRotator Position", armRotator.getPosition());
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
 
+        grabberExtender.setPower(gamepad2.right_trigger);
+        grabberExtender.setPower(-gamepad2.left_trigger);
+
+        // p1 shifted controls
+        if(p1.y.isDown()){
+
+            // outtake stuff
+
+            if (p1.leftBumper.isDown()) {
+                raiser.retractFlipper();
+            }
+
+            if (p1.rightBumper.isDown()) {
+                raiser.outtakeGlyph();
+            }
+
+            if (p1.x.isDown()) {
+                this.intake.flipInIntake();
+                counts++;
+                if(counts >= 100) {
+                    this.intake.flipOutIntake();
+                    counts = 0;
+                }
+            }
+
+        } else {
+
+            // intake stuff
+
+            if (p1.leftBumper == PRESSED) {
+                if (intake.getRotation().getCurrentPosition() < 0.5) {
+                    intake.flipOutIntake();
+                } else {
+                    intake.flipInIntake();
+                }
+            }
+
+            if (p1.rightBumper == PRESSED) {
+                if (intake.getIntake().getPower() >= 0) {
+                    intake.startIntake();
+                } else {
+                    intake.stopIntake();
+                }
+            }
+        }
+
+        //p2 shifted controls
+        if(p2.y.isDown()){
+
+            if(p2.leftBumper.isDown()) {
+                grabberHand.setPosition(Math.min(1, grabberHand.getPosition() + 0.01));
+            }
+
+            if(p2.rightBumper.isDown()){
+                grabberWrist.setPosition(Math.min(1, grabberWrist.getPosition() + 0.01));
+            }
+
+        } else {
+
+            if(p2.leftBumper.isDown()) {
+                grabberHand.setPosition(Math.max(0, grabberHand.getPosition() - 0.01));
+            }
+
+            if(p2.rightBumper.isDown()){
+                grabberWrist.setPosition(Math.max(0, grabberWrist.getPosition() - 0.01));
+            }
+
+        }
+
+        telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
+        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
+
+        telemetry.addData("Relic Extender Power", grabberExtender.getPower());
+        telemetry.addData("Relic Wrist Position", grabberWrist.getPosition());
+        telemetry.addData("Relic Hand Position", grabberHand.getPosition());
+
+
+        telemetry.update();
         p1.update();
         p2.update();
 

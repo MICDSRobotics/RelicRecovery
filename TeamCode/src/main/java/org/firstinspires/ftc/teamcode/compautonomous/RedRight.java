@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
@@ -23,12 +25,15 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 public class RedRight extends LinearOpMode implements Settings {
 
     private Robot robot;
-    private DcMotor raiser;
-    private Servo grabber;
     private MecanumDrive drivetrain;
+
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+
     private IMUWrapper imuWrapper;
     private VuforiaWrapper vuforiaWrapper;
-    private GrabberPrimer grabberPrimer;
+
+    private double voltage;
 
     private Servo armExtender;
     private Servo armRotator;
@@ -42,31 +47,33 @@ public class RedRight extends LinearOpMode implements Settings {
         //Initialize hardware
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
+
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
+
         imuWrapper = new IMUWrapper(hardwareMap);
         vuforiaWrapper = new VuforiaWrapper(hardwareMap);
-        grabberPrimer = new GrabberPrimer(this.grabber);
 
-        //Assuming other hardware not yet on the robot
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
-        armRotator.scaleRange(0.1, 0.9);
-        armExtender.scaleRange(0.16, 0.9);
+        //Prepare hardware
+        armRotator.scaleRange(0.158, 0.7);
+        armExtender.scaleRange(0.16, 0.95);
 
         armExtender.setPosition(1.0);
-        armRotator.setPosition(0.5);
-
-        this.grabberPrimer.initSystem();
+        armRotator.setPosition(1.0);
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        waitForStart();
+        raiser.retractFlipper();
+        intake.flipInIntake();
 
-        this.grabberPrimer.grab();
+        telemetry.update();
+
+        waitForStart();
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
@@ -79,9 +86,11 @@ public class RedRight extends LinearOpMode implements Settings {
         telemetry.update();
 
         //STEP 2: Hitting the jewel
+        armRotator.setPosition(0.5);
+        armExtender.setPosition(0.8);
+        sleep(1000);
         armExtender.setPosition(0); //servo in 'out' position
-
-        sleep(2000);
+        sleep(1500);
 
         telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
         //Checks that blue jewel is closer towards the cryptoboxes (assuming color sensor is facing forward
@@ -98,86 +107,138 @@ public class RedRight extends LinearOpMode implements Settings {
 
         sleep(1000);
 
-        armExtender.setPosition(1);
+        armExtender.setPosition(0.8);
         armRotator.setPosition(0.5);
 
         sleep(1000);
 
-        imuWrapper.getIMU().initialize(imuWrapper.getIMU().getParameters());
-
-        this.raiser.setPower(1);
-        sleep(1000);
-        this.raiser.setPower(0);
-
         // move backwards and slam into the wall
+        this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 115));
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 125)); // 115cm
         this.drivetrain.stopMoving();
+        this.intake.stopIntake();
         sleep(100);
 
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(75);
+        // TODO: Investigate using not full velocity and see if that will allow the robot to move forward but not onto the stone
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0);
+        sleep(150);
         this.drivetrain.stopMoving();
         sleep(1000);
 
-
+        //THIS IS THE DISTANCE TO BE CHANGED
         this.drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1, 0);
-        sleep(sideShort + 100);
-
-        //Face cryptobox
-        this.drivetrain.setAngle(imuWrapper, (float)Math.PI);
-        sleep(1000);
+        sleep(sideShort - 200); // -100
         this.drivetrain.stopMoving();
+        sleep(500);
 
-        // START
-        switch (relicRecoveryVuMark) {
-            case LEFT: telemetry.addData("Column", "Putting it in the left");
-                drivetrain.complexDrive(MecanumDrive.Direction.LEFT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            case CENTER: telemetry.addData("Column", "Putting it in the center");
-                break;
-            case RIGHT: telemetry.addData("Column", "Putting it in the right");
-                drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                sleep((long)(1100 + sideShort));
-                break;
-            default:
-                break;
-        }
+        drivetrain.setAngle(imuWrapper, 0);
+
+        //Lower raiser a bit
+        this.raiser.lower();
+        sleep(500);
+        this.raiser.stop();
+
+        moveToCorrectColumn();
 
         telemetry.update();
 
-        grabberPrimer.open();
         drivetrain.stopMoving();
-        sleep(1000);
+        sleep(500);
+
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
+        sleep(distanceToWall);
+        this.drivetrain.stopMoving();
+        sleep(750);
+        raiser.outtakeGlyph();
+        sleep(700);
+
+        drivetrain.stopMoving();
+        sleep(200);
+
+        wiggle();
+
+        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(distanceToWall + 150);
+        this.drivetrain.stopMoving();
+
+        // pull out
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        sleep(300);
+        this.drivetrain.stopMoving();
+
+        telemetry.update();
+
+        sleep(500);
+
+        //Move back to center of cryptobox tape (if necessary)
+        // START
+        /*moveToCorrectColumn();
+
+        raiser.lower();
+        sleep(450);
+        raiser.stop();
+
+        this.attemptToGetMultiBlock();
+
+        this.drivetrain.stopMoving();
+        sleep(200);
+
+        //REPEAT PUTTING BLOCK IN THE THING
+        //Turn 90 degrees to face cryptobox
+        drivetrain.setAngle(imuWrapper, Math.PI/2);
+        sleep(500);
+
+        moveToCorrectColumn();
+
+        telemetry.update();
 
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), slamIntoWallSpeed, 0);
         sleep(200);
 
+        raiser.outtakeGlyph();
         drivetrain.stopMoving();
-        sleep(200);
+        sleep(500);
+        raiser.retractFlipper();
 
-        wiggle();
-        wiggle();
-
-        // PULL OUT
+        // PULL OUT (Once)
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(200);
+        sleep(150);
         this.drivetrain.stopMoving();
-
-        telemetry.update();
-        sleep(1000);
-        // END
+        */
     }
 
+    //Method to help guard against glyph getting stuck between columns
     public void wiggle(){
-        drivetrain.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNLEFT.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.75, 0);
         sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
         sleep(150);
+    }
+
+    public void moveToCorrectColumn(){
+        switch (relicRecoveryVuMark) {
+            case LEFT:
+                telemetry.addData("Column", "Putting it in the left");
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, -Math.PI * 11 / 12);
+                break;
+            case CENTER:
+                telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT:
+                telemetry.addData("Column", "Putting it in the right");
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+                drivetrain.setAngle(imuWrapper, Math.PI * 11 / 12);
+                break;
+            default:
+                break;
+        }
     }
 }

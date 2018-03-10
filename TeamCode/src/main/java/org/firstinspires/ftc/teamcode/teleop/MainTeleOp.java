@@ -31,13 +31,14 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
-import org.firstinspires.ftc.teamcode.robotplus.hardware.GrabberPrimer;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
 import org.firstinspires.ftc.teamcode.robotplus.robodata.AccessControl;
@@ -56,6 +57,9 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
 public class MainTeleOp extends OpMode
 {
 
+    private int counts;
+    private boolean toggleboi;
+
     private ElapsedTime runtime = new ElapsedTime();
 
     private boolean lowSpeed = false;
@@ -67,11 +71,12 @@ public class MainTeleOp extends OpMode
 
     private MecanumDrive drivetrain;
 
-    private DcMotor raiser;
-    private Servo grabber;
+    private ComplexRaiser raiser;
+    private FlipperIntake intake;
+    private IMUWrapper imuWrapper;
+
     private Servo armRotator;
     private Servo armExtender;
-    private GrabberPrimer grabberPrimer;
 
     private AccessControl accessControl = new AccessControl();
 
@@ -80,6 +85,7 @@ public class MainTeleOp extends OpMode
      */
     @Override
     public void init() {
+
         telemetry.addData("Status", "Initialized");
 
         p1 = new Controller(gamepad1);
@@ -88,20 +94,20 @@ public class MainTeleOp extends OpMode
         robot = new Robot(hardwareMap);
         drivetrain = (MecanumDrive) robot.getDrivetrain();
 
-        raiser = hardwareMap.dcMotor.get("raiser");
-        grabber = hardwareMap.servo.get("grabber");
-        grabberPrimer = new GrabberPrimer(grabber);
-
-        grabber.scaleRange(0.25, 1.0);
+        raiser = new ComplexRaiser(hardwareMap);
+        intake = new FlipperIntake(hardwareMap);
 
         armRotator = hardwareMap.servo.get("armRotator");
         armExtender = hardwareMap.servo.get("armExtender");
 
-        armRotator.scaleRange(0.1,0.9);
-        armExtender.scaleRange(0.16, 0.85);
+        armRotator.scaleRange(0.158, 0.7);
+        armExtender.scaleRange(0.16, 0.95);
 
-        raiser.setDirection(DcMotorSimple.Direction.FORWARD);
+        counts = 0;
+        toggleboi = false;
 
+        //armExtender.setPosition(0.8);
+        //armRotator.setPosition(0.5);
     }
 
     /*
@@ -126,22 +132,26 @@ public class MainTeleOp extends OpMode
     public void loop() {
 
         telemetry.addData("Status", "Running: " + runtime.toString());
-        telemetry.addData("Access", accessControl.getTelemetryState());
 
+        //Drivetrain switching & low speed
         if (accessControl.isG2Primary()) {
             if (this.lowSpeed) {
                 drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+                //drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
                 drivetrain.complexDrive(gamepad2, telemetry);
+                //drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
         else {
             if (this.lowSpeed) {
                 drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+                //drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
                 drivetrain.complexDrive(gamepad1, telemetry);
+                //drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
 
@@ -149,50 +159,131 @@ public class MainTeleOp extends OpMode
             accessControl.changeAccess();
         }
 
+        telemetry.addData("Access", accessControl.getTelemetryState());
+
         if (p1.x == PRESSED || p2.x == PRESSED) {
             this.lowSpeed = !this.lowSpeed;
-            telemetry.addData("Switching", "YEET");
         }
 
-        //Raise arm while the y button is held, lower it when a it held
+        telemetry.addData("Slowmode", this.lowSpeed);
+
+        //Raise outtake while the y button is held, lower it when a it held
         if(p1.a.isDown() || p2.a.isDown()){
-            raiser.setPower(1);
+            raiser.raiseUp();
         } else if (p1.b.isDown() || p2.b.isDown()) {
-            raiser.setPower(-1);
+            raiser.lower();
         } else {
-            raiser.setPower(0);
+            raiser.stop();
         }
 
-        //Set grabber position
-        if(p1.leftBumper == PRESSED || p2.leftBumper == PRESSED){
-            grabberPrimer.open();
-        } else if (p1.rightBumper == PRESSED || p2.rightBumper == PRESSED){
-            grabberPrimer.grab();
-        }
-
-        //Set rotation servo positions
+        //Set arm rotation servo positions
         if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
         } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
         }
 
-        //Set extender servo positions
+        telemetry.addData("ArmRotator Position", armRotator.getPosition());
+
+        //Set arm extender servo positions
         if(p1.dpadUp.isDown() || p2.dpadUp.isDown()){
             armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
         } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
             armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
         }
 
-        telemetry.addData("Grabber Position", grabber.getPosition());
-
-        telemetry.addData("ArmRotator Position", armRotator.getPosition());
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
 
-        telemetry.addData("Slowmode", this.lowSpeed);
-        telemetry.addData("Baby got Bacc?", p1.x);
-        telemetry.addData("Fr thooo", p1.x);
+        // p1 shifted controls
+        if(p1.y.isDown()){
 
+            // outtake stuff
+            if (p1.leftBumper.isDown()) {
+                raiser.retractFlipper();
+            }
+            if (p1.rightBumper.isDown()) {
+                raiser.outtakeGlyph();
+            }
+
+            // clear intake if in bad situation
+            if (p1.b.isDown()) {
+                this.intake.reverseIntake();
+            }
+
+            // recalibrate IMU
+            if (p1.b == PRESSED) {
+                imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
+                telemetry.addData("reset", "Trying to recalibrate");
+            }
+
+        } else {
+
+            // intake stuff
+            if (p1.leftBumper == PRESSED) {
+                if (toggleboi) { // TODO: fix the current position
+                    intake.flipOutIntake();
+                } else {
+                    intake.flipInIntake();
+                }
+                toggleboi = !toggleboi;
+            }
+            if (p1.rightBumper == PRESSED) {
+                if (intake.getIntake().getPower() >= 0) {
+                    intake.startIntake();
+                } else {
+                    intake.stopIntake();
+                }
+            }
+
+        }
+
+        //p2 shifted controls
+        if(p2.y.isDown()){
+
+            // outtake stuff
+            if (p2.leftBumper.isDown()) {
+                raiser.retractFlipper();
+            }
+            if (p2.rightBumper.isDown()) {
+                raiser.outtakeGlyph();
+            }
+
+            // clear intake if in bad situation
+            if (p2.x.isDown()) {
+                this.intake.reverseIntake();
+            }
+
+            // recalibrate IMU
+            if (p2.b == PRESSED) {
+                imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
+                telemetry.addData("reset", "Trying to recalibrate");
+            }
+
+        } else {
+
+            // intake stuff
+            if (p2.leftBumper == PRESSED) {
+                if (intake.getRotation().getCurrentPosition() < 100) { // TODO: fix the current position bound
+                    intake.flipOutIntake();
+                } else {
+                    intake.flipInIntake();
+                }
+            }
+            if (p2.rightBumper == PRESSED) {
+                if (intake.getIntake().getPower() >= 0) {
+                    intake.startIntake();
+                } else {
+                    intake.stopIntake();
+                }
+            }
+
+        }
+
+        telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
+        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
+        telemetry.addData("Intake Flipper Power", intake.getRotation().getPower());
+
+        telemetry.update();
         p1.update();
         p2.update();
 
