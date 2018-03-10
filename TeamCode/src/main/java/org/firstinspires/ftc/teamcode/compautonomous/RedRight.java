@@ -117,7 +117,7 @@ public class RedRight extends LinearOpMode implements Settings {
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep(TimeOffsetVoltage.calculateDistance(voltage, 115));
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 125)); // 115cm
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
         sleep(100);
