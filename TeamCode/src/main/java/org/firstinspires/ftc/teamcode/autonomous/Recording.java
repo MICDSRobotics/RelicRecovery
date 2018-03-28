@@ -53,17 +53,9 @@ public class Recording extends OpMode {
     private File directory;
     private File file;
 
-    private String filename = "PLS WORK.json";
+    private String filename = "Testing.json";
 
-    FileOutputStream outputStream;
-
-    /*
-    Looper looper;
-
-    public Looper getLooper() {
-        return looper;
-    }
-    */
+    private FileOutputStream outputStream;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -74,24 +66,36 @@ public class Recording extends OpMode {
         //robot = new Robot(hardwareMap);
         //drivetrain = (MecanumDrive) robot.getDrivetrain();
 
+        /*
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             Log.d("INPUT RECORDER", "good to go homie");
         } else {
             Log.d("INPUT RECORDER", "FUCK");
         }
+        */
 
-        directory = getStorageDir(hardwareMap.appContext, "aw man");
+        //Log.d("INPUT RECORDER", readFromFile(hardwareMap.appContext));
+        //for (String file : hardwareMap.appContext.fileList()) {
+        //    Log.d("INPUT RECORDER", file);
+        //}
 
-        Log.d("INPUT RECORDER", directory.getAbsolutePath());
+        directory = hardwareMap.appContext.getFilesDir();
+        //directory = getStorageDir(hardwareMap.appContext, "Input swag");
+
+        Log.d("INPUT RECORDER - dir", directory.getAbsolutePath());
+        Log.d("INPUT RECORDER - dir", directory.getPath());
 
         file = new File(directory, filename);
 
-        Log.d("INPUT RECORDER", file.getAbsolutePath());
+        Log.d("INPUT RECORDER - file", file.getAbsolutePath());
+        Log.d("INPUT RECORDER - file", file.getPath());
 
         inputs = new ArrayList<Input>();
 
         telemetry.addData("Status", "Initialized");
         Log.d("INPUT RECORDER", "inited");
+
+
 
     }
 
@@ -135,14 +139,14 @@ public class Recording extends OpMode {
         Log.d("INPUT RECORDER", "stopping");
 
         try {
-            outputStream = hardwareMap.appContext.openFileOutput(filename, Context.MODE_WORLD_READABLE);
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+            outputStream = hardwareMap.appContext.openFileOutput(filename, Context.MODE_PRIVATE);
+            //OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 
-            //InputWriter writer = new InputWriter();
-            //writer.writeJson(outputStream, inputs);
+            InputWriter writer = new InputWriter();
+            writer.writeJson(outputStream, inputs);
 
-            outputStreamWriter.write("Hello World!");
-            outputStreamWriter.close();
+            //outputStream.write("Hello World!".getBytes());
+            //outputStream.close();
             telemetry.addData("Output", outputStream);
             Log.d("INPUT RECORDER", "wrote");
         } catch (IOException error){
@@ -156,13 +160,14 @@ public class Recording extends OpMode {
 
 
     public File getStorageDir(Context context, String fileName) {
-        // Get the directory for the app's private pictures directory.
+        // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS), fileName);
+                Environment.DIRECTORY_PICTURES), fileName);
         if (!file.mkdirs()) {
             Log.e("INPUT RECORDER", "Directory not created");
         }
         return file;
+
     }
 
     private String readFromFile(Context context) {
@@ -170,7 +175,7 @@ public class Recording extends OpMode {
         String ret = "";
 
         try {
-            InputStream inputStream = context.openFileInput("config.txt");
+            InputStream inputStream = context.openFileInput(filename);
 
             if ( inputStream != null ) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
