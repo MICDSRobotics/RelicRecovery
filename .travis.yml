@@ -6,13 +6,14 @@ android:
  components:
   - tools
   - platform-tools
-  - tools
   - build-tools-27.0.3
+  - tools
   - android-19 #Minimum API Version
   - android-23 #Target API Version
 # - android-26 #Newest API Version
 
   - extra-google-m2repository #linter and some other extras
+  - extra-android-m2repository
 
 
 # (We use te default ./gradlew build ConnectedCheck now, so this is unnecessary)
