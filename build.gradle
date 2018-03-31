@@ -1,7 +1,7 @@
 /**
  * Top-level build file for ftc_app project.
  *
- * It is extraordinarily rare that you will ever need to edit this file.
+ * It is extraordinarily rare that you will ever need to edit this file. BET
  */
 buildscript {
     repositories {
@@ -11,5 +11,12 @@ buildscript {
     dependencies {
 
         classpath 'com.android.tools.build:gradle:3.1.0'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
     }
 }
