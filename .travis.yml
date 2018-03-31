@@ -6,7 +6,7 @@ android:
  components:
   - platform-tools
   - tools
-  - build-tools-26.0.2
+  - build-tools-27.0.3
   - android-19 #Minimum API Version
   - android-23 #Target API Version
 # - android-26 #Newest API Version
