@@ -76,39 +76,10 @@ public class BlueRight extends LinearOpMode implements Settings{
         waitForStart();
 
         //STEP 1: Scan vuforia pattern
-        relicRecoveryVuMark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
-
-        if (relicRecoveryVuMark != RelicRecoveryVuMark.UNKNOWN) {
-            telemetry.addData("VuMark Column", relicRecoveryVuMark.name());
-        } else {
-            telemetry.addData("VuMark Column", "borked");
-        }
-        telemetry.update();
+        relicRecoveryVuMark = Common.scanVuMark(this, vuforiaWrapper);
 
         //STEP 2: Hitting the jewel
-        armRotator.setPosition(0.5);
-        armExtender.setPosition(0.8);
-        sleep(1000);
-        armExtender.setPosition(0); //servo in 'out' position
-        sleep(1500);
-
-        telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
-        //Checks that blue jewel is closer towards the cryptoboxes (assuming color sensor is facing forward
-        if (Math.abs(colorSensorWrapper.getRGBValues()[2] - colorSensorWrapper.getRGBValues()[0]) < 30) {
-            telemetry.addData("Jewels", "Too close.");
-        } else if (colorSensorWrapper.getRGBValues()[2] > colorSensorWrapper.getRGBValues()[0]) {
-            armRotator.setPosition(0);
-            telemetry.addData("Jewels", "Blue Team!");
-        } else {
-            armRotator.setPosition(1);
-            telemetry.addData("Jewels", "Red Team!");
-        }
-        telemetry.update();
-
-        sleep(1000);
-
-        armExtender.setPosition(0.8);
-        armRotator.setPosition(0.5);
+        Common.hitJewel(this, armRotator, armExtender, colorSensorWrapper, true);
 
         sleep(1000);
 
@@ -135,7 +106,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(500);
         this.raiser.stop();
 
-        moveToCorrectColumn();
+        Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
 
         telemetry.update();
 
@@ -169,7 +140,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         // TODO: REMOVE IF NOT WORK THIS IS PSEUDO CODE
         this.attemptToGetMultiBlock();
         sleep(500);
-        this.moveToCorrectColumn();
+        Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(350);
         this.drivetrain.stopMoving();
@@ -177,38 +148,6 @@ public class BlueRight extends LinearOpMode implements Settings{
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         sleep(300);
         this.drivetrain.stopMoving();
-    }
-
-    //Method to help guard against glyph getting stuck between columns
-    public void wiggle(){
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWNLEFT.angle(), 0.75, 0);
-        sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.75, 0);
-        sleep(150);
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
-        sleep(150);
-    }
-
-    public void moveToCorrectColumn(){
-        switch (relicRecoveryVuMark) {
-            case LEFT:
-                telemetry.addData("Column", "Putting it in the left");
-                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                //sleep((long) (1100 + sideShort));
-                drivetrain.setAngle(imuWrapper, -Math.PI * 11 / 12);
-                break;
-            case CENTER:
-                telemetry.addData("Column", "Putting it in the center");
-                break;
-            case RIGHT:
-                telemetry.addData("Column", "Putting it in the right");
-                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
-                //sleep((long) (1100 + sideShort));
-                drivetrain.setAngle(imuWrapper, Math.PI * 11 / 12);
-                break;
-            default:
-                break;
-        }
     }
 
     public void attemptToGetMultiBlock() {

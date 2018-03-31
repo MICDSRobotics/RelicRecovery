@@ -25,7 +25,8 @@ public class Common {
         return mark;
     }
 
-    public static void hitJewel(LinearOpMode lop, Servo armRotator, Servo armExtender, ColorSensorWrapper colorSensorWrapper, boolean isBlueTeam){
+    public static void hitJewel(LinearOpMode lop, Servo armRotator, Servo armExtender,
+                                ColorSensorWrapper colorSensorWrapper, boolean isBlueTeam){
         armRotator.setPosition(0.5);
         lop.sleep(2000);
         armExtender.setPosition(0.8);
@@ -62,7 +63,8 @@ public class Common {
         armRotator.setPosition(0.5);
     }
 
-    public static void faceCorrectColumn(LinearOpMode lop, MecanumDrive drivetrain, RelicRecoveryVuMark vuMark, IMUWrapper imuWrapper){
+    public static void faceCorrectColumn(LinearOpMode lop, MecanumDrive drivetrain,
+                                         RelicRecoveryVuMark vuMark, IMUWrapper imuWrapper){
         switch (vuMark) {
             case LEFT:
                 lop.telemetry.addData("Column", "Putting it in the left");
