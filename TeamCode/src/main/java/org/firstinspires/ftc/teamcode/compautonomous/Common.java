@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUAccelerationIntegrator;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
@@ -11,14 +12,17 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 
 public class Common {
 
-    //Method to help guard against glyph getting stuck between columns
-    public static void wiggle(LinearOpMode lop, MecanumDrive dt){
-        dt.complexDrive(MecanumDrive.Direction.DOWNLEFT.angle(), 0.75, 0);
-        lop.sleep(150);
-        dt.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.75, 0);
-        lop.sleep(150);
-        dt.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
-        lop.sleep(150);
+    public static RelicRecoveryVuMark scanVuMark(LinearOpMode lop, VuforiaWrapper vuforiaWrapper){
+        RelicRecoveryVuMark mark = RelicRecoveryVuMark.from(vuforiaWrapper.getLoader().getRelicTemplate());
+
+        if (mark != RelicRecoveryVuMark.UNKNOWN) {
+            lop.telemetry.addData("VuMark Column", mark.name());
+        } else {
+            lop.telemetry.addData("VuMark Column", "borked");
+        }
+        lop.telemetry.update();
+
+        return mark;
     }
 
     public static void hitJewel(LinearOpMode lop, Servo armRotator, Servo armExtender, ColorSensorWrapper colorSensorWrapper, boolean isBlueTeam){
@@ -86,6 +90,16 @@ public class Common {
     }
 
     public static void scoreInColumn(){
-        
+
+    }
+
+    //Method to help guard against glyph getting stuck between columns
+    public static void wiggle(LinearOpMode lop, MecanumDrive dt){
+        dt.complexDrive(MecanumDrive.Direction.DOWNLEFT.angle(), 0.75, 0);
+        lop.sleep(150);
+        dt.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.75, 0);
+        lop.sleep(150);
+        dt.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
+        lop.sleep(150);
     }
 }
