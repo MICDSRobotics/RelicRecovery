@@ -12,6 +12,8 @@ android:
   - android-23 #Target API Version
 # - android-26 #Newest API Version
 
+  - extra-google-m2repository #linter and some other extras
+
 
 # (We use te default ./gradlew build ConnectedCheck now, so this is unnecessary)
 #script :
