@@ -3,7 +3,10 @@ package org.firstinspires.ftc.teamcode.compautonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUAccelerationIntegrator;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
 
 public class Common {
@@ -53,5 +56,36 @@ public class Common {
 
         armExtender.setPosition(0.8);
         armRotator.setPosition(0.5);
+    }
+
+    public static void faceCorrectColumn(LinearOpMode lop, MecanumDrive drivetrain, RelicRecoveryVuMark vuMark, IMUWrapper imuWrapper){
+        switch (vuMark) {
+            case LEFT:
+                lop.telemetry.addData("Column", "Putting it in the left");
+
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+
+                //Rotates instead of moving to the side
+                drivetrain.setAngle(imuWrapper, -Math.PI * 11 / 12);
+                break;
+            case CENTER:
+                lop.telemetry.addData("Column", "Putting it in the center");
+                break;
+            case RIGHT:
+                lop.telemetry.addData("Column", "Putting it in the right");
+                //drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 0.4, 0);
+                //sleep((long) (1100 + sideShort));
+
+                //Rotates instead of moving to the side
+                drivetrain.setAngle(imuWrapper, Math.PI * 11 / 12);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void scoreInColumn(){
+        
     }
 }
