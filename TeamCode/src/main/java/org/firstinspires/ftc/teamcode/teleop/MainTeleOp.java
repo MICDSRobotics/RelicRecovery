@@ -263,7 +263,7 @@ public class MainTeleOp extends OpMode
 
             // intake stuff
             if (p2.leftBumper == PRESSED) {
-                if (intake.getRotation().getCurrentPosition() < 100) { // TODO: fix the current position bound
+                if (intake.getRotation().getPosition() < 100) { // TODO: fix the current position bound
                     intake.flipOutIntake();
                 } else {
                     intake.flipInIntake();
@@ -280,8 +280,7 @@ public class MainTeleOp extends OpMode
         }
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
-        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
-        telemetry.addData("Intake Flipper Power", intake.getRotation().getPower());
+        telemetry.addData("Intake Flipper", intake.getRotation().getPosition());
 
         telemetry.update();
         p1.update();

@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -106,6 +107,8 @@ public class GyroMecanum extends OpMode
 
         counts = 0;
         toggleboi = false;
+
+        intake.getIntake().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //armExtender.setPosition(0.8);
         //armRotator.setPosition(0.5);
@@ -217,6 +220,15 @@ public class GyroMecanum extends OpMode
                 telemetry.addData("reset", "Trying to recalibrate");
             }
 
+            if(p1.dpadUp.isDown()){
+                intake.flipOutIntake();
+            }
+
+            if(p1.dpadDown.isDown()){
+                intake.flipInIntake();
+            }
+
+
         } else {
 
             // intake stuff
@@ -254,6 +266,14 @@ public class GyroMecanum extends OpMode
                 this.intake.reverseIntake();
             }
 
+            if(p2.dpadUp.isDown()){
+                intake.flipOutIntake();
+            }
+
+            if(p2.dpadDown.isDown()){
+                intake.flipInIntake();
+            }
+
             // recalibrate IMU
             if (p2.b == PRESSED) {
                 imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
@@ -264,7 +284,7 @@ public class GyroMecanum extends OpMode
 
             // intake stuff
             if (p2.leftBumper == PRESSED) {
-                if (intake.getRotation().getCurrentPosition() < 100) { // TODO: fix the current position bound
+                if (intake.getRotation().getPosition() < 100) { // TODO: fix the current position bound
                     intake.flipOutIntake();
                 } else {
                     intake.flipInIntake();
@@ -281,8 +301,7 @@ public class GyroMecanum extends OpMode
         }
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
-        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
-        telemetry.addData("Intake Flipper Power", intake.getRotation().getPower());
+        telemetry.addData("Intake Flipper", intake.getRotation().getPosition());
 
         telemetry.update();
         p1.update();
