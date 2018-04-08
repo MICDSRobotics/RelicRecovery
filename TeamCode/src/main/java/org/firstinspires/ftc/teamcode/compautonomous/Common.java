@@ -40,18 +40,18 @@ public class Common {
             lop.telemetry.addData("Jewels", "Too close.");
         } else if (colorSensorWrapper.getRGBValues()[2] > colorSensorWrapper.getRGBValues()[0]) {
             if(isBlueTeam) {
-                armRotator.setPosition(0);
+                armRotator.setPosition(1);
                 lop.telemetry.addData("Jewels", "Blue Team, hitting off the back!");
             } else {
-                armRotator.setPosition(1);
+                armRotator.setPosition(0);
                 lop.telemetry.addData("Jewels", "Red Team, hitting off the front!");
             }
         } else {
             if(isBlueTeam) {
-                armRotator.setPosition(1);
+                armRotator.setPosition(0);
                 lop.telemetry.addData("Jewels", "Blue Team, hitting off the front!");
             } else {
-                armRotator.setPosition(0);
+                armRotator.setPosition(1);
                 lop.telemetry.addData("Jewels", "Blue Team, hitting off the back!");
             }
         }

@@ -182,19 +182,12 @@ public class GyroMecanum extends OpMode
 
         //Set arm rotation servo positions
         if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
-            armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
+            armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.05));
         } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
-            armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
+            armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.05));
         }
 
         telemetry.addData("ArmRotator Position", armRotator.getPosition());
-
-        //Set arm extender servo positions
-        if(p1.dpadUp.isDown() || p2.dpadUp.isDown()){
-            armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
-        } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
-            armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
-        }
 
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
 
@@ -248,6 +241,13 @@ public class GyroMecanum extends OpMode
                 }
             }
 
+            //Set arm extender servo positions
+            if(p1.dpadUp.isDown()){
+                armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
+            } else if(p1.dpadDown.isDown()){
+                armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
+            }
+
         }
 
         //p2 shifted controls
@@ -296,6 +296,13 @@ public class GyroMecanum extends OpMode
                 } else {
                     intake.stopIntake();
                 }
+            }
+
+            //Set arm extender servo positions
+            if(p2.dpadUp.isDown()){
+                armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
+            } else if(p2.dpadDown.isDown()){
+                armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
             }
 
         }
