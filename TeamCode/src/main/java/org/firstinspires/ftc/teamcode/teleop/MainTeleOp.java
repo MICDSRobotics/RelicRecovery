@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -52,6 +53,7 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
  * @since 1/4/2018
  */
 
+@Disabled
 @TeleOp(name="Drive Robot", group="Competition OpModes")
 //@Disabled
 public class MainTeleOp extends OpMode
@@ -262,8 +264,8 @@ public class MainTeleOp extends OpMode
         } else {
 
             // intake stuff
-            if (p2.leftBumper == PRESSED) {
-                if (intake.getRotation().getCurrentPosition() < 100) { // TODO: fix the current position bound
+            /*if (p2.leftBumper == PRESSED) {
+                if (intake.getRotation().getPosition() < 100) { // TODO: fix the current position bound
                     intake.flipOutIntake();
                 } else {
                     intake.flipInIntake();
@@ -275,13 +277,11 @@ public class MainTeleOp extends OpMode
                 } else {
                     intake.stopIntake();
                 }
-            }
-
+            }*/
         }
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
-        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
-        telemetry.addData("Intake Flipper Power", intake.getRotation().getPower());
+        telemetry.addData("Intake Flipper", intake.getRotation().getPosition());
 
         telemetry.update();
         p1.update();

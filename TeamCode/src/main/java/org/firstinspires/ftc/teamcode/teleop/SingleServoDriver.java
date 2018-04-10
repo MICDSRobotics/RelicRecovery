@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller;
 /**
  * Created by amigala on 3/1/2018.
  */
+@Disabled
 @TeleOp(name = "SingleServo", group = "Test")
 public class SingleServoDriver extends OpMode {
     private Servo singleServo;

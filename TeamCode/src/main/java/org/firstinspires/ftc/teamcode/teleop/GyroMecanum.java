@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -107,6 +108,8 @@ public class GyroMecanum extends OpMode
         counts = 0;
         toggleboi = false;
 
+        intake.getIntake().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         //armExtender.setPosition(0.8);
         //armRotator.setPosition(0.5);
     }
@@ -171,7 +174,7 @@ public class GyroMecanum extends OpMode
         //Raise outtake while the y button is held, lower it when a it held
         if(p1.a.isDown() || p2.a.isDown()){
             raiser.raiseUp();
-        } else if (p1.b.isDown() || p2.b.isDown()) {
+        } else if (p1.b.isDown()) {
             raiser.lower();
         } else {
             raiser.stop();
@@ -179,19 +182,12 @@ public class GyroMecanum extends OpMode
 
         //Set arm rotation servo positions
         if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
-            armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.01));
+            armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.05));
         } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
-            armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.01));
+            armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.05));
         }
 
         telemetry.addData("ArmRotator Position", armRotator.getPosition());
-
-        //Set arm extender servo positions
-        if(p1.dpadUp.isDown() || p2.dpadUp.isDown()){
-            armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.01));
-        } else if(p1.dpadDown.equals(Controller.Button.HELD) || p2.dpadDown.equals(Controller.Button.HELD)){
-            armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.01));
-        }
 
         telemetry.addData("ArmExtender Position", armExtender.getPosition());
 
@@ -217,23 +213,35 @@ public class GyroMecanum extends OpMode
                 telemetry.addData("reset", "Trying to recalibrate");
             }
 
+            if(p1.dpadUp.isDown()){
+                intake.flipOutIntake();
+            }
+
+            if(p1.dpadDown.isDown()){
+                intake.flipInIntake();
+            }
+
+
         } else {
 
             // intake stuff
             if (p1.leftBumper == PRESSED) {
-                if (toggleboi) { // TODO: fix the current position
-                    intake.flipOutIntake();
-                } else {
-                    intake.flipInIntake();
-                }
-                toggleboi = !toggleboi;
+                intake.stopIntake();
             }
+
             if (p1.rightBumper == PRESSED) {
                 if (intake.getIntake().getPower() >= 0) {
                     intake.startIntake();
                 } else {
                     intake.stopIntake();
                 }
+            }
+
+            //Set arm extender servo positions
+            if(p1.dpadUp.isDown()){
+                armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
+            } else if(p1.dpadDown.isDown()){
+                armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
             }
 
         }
@@ -254,6 +262,14 @@ public class GyroMecanum extends OpMode
                 this.intake.reverseIntake();
             }
 
+            if(p2.dpadUp.isDown()){
+                intake.flipOutIntake();
+            }
+
+            if(p2.dpadDown.isDown()){
+                intake.flipInIntake();
+            }
+
             // recalibrate IMU
             if (p2.b == PRESSED) {
                 imuWrapper.getIMU().initialize(imuWrapper.getInitilizationParameters());
@@ -262,13 +278,13 @@ public class GyroMecanum extends OpMode
 
         } else {
 
+            if(p2.b.isDown()){
+                raiser.lower();
+            }
+
             // intake stuff
             if (p2.leftBumper == PRESSED) {
-                if (intake.getRotation().getCurrentPosition() < 100) { // TODO: fix the current position bound
-                    intake.flipOutIntake();
-                } else {
-                    intake.flipInIntake();
-                }
+                intake.stopIntake();
             }
             if (p2.rightBumper == PRESSED) {
                 if (intake.getIntake().getPower() >= 0) {
@@ -278,11 +294,17 @@ public class GyroMecanum extends OpMode
                 }
             }
 
+            //Set arm extender servo positions
+            if(p2.dpadUp.isDown()){
+                armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
+            } else if(p2.dpadDown.isDown()){
+                armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
+            }
+
         }
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
-        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
-        telemetry.addData("Intake Flipper Power", intake.getRotation().getPower());
+        telemetry.addData("Intake Flipper", intake.getRotation().getPosition());
 
         telemetry.update();
         p1.update();

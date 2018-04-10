@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -56,6 +57,7 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
  * @since 1/4/2018
  */
 
+@Disabled
 @TeleOp(name="Relic Grabber Bot", group="Gogo gadget extendo arm")
 //@Disabled
 public class RelicTeleOp extends OpMode
@@ -220,12 +222,13 @@ public class RelicTeleOp extends OpMode
                 }
             }
 
+
         } else {
 
             // intake stuff
 
             if (p1.leftBumper == PRESSED) {
-                if (intake.getRotation().getCurrentPosition() < 0.5) {
+                if (intake.getRotation().getPosition() < 0.5) {
                     intake.flipOutIntake();
                 } else {
                     intake.flipInIntake();
@@ -265,7 +268,7 @@ public class RelicTeleOp extends OpMode
         }
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
-        telemetry.addData("Intake Flipper", intake.getRotation().getCurrentPosition());
+        telemetry.addData("Intake Flipper", intake.getRotation().getPosition());
 
         telemetry.addData("Relic Extender Power", grabberExtender.getPower());
         telemetry.addData("Relic Wrist Position", grabberWrist.getPosition());
