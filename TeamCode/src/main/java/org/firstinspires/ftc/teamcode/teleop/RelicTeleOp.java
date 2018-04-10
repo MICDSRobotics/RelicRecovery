@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -56,6 +57,7 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
  * @since 1/4/2018
  */
 
+@Disabled
 @TeleOp(name="Relic Grabber Bot", group="Gogo gadget extendo arm")
 //@Disabled
 public class RelicTeleOp extends OpMode

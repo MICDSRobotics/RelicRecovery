@@ -174,7 +174,7 @@ public class GyroMecanum extends OpMode
         //Raise outtake while the y button is held, lower it when a it held
         if(p1.a.isDown() || p2.a.isDown()){
             raiser.raiseUp();
-        } else if (p1.b.isDown() || p2.b.isDown()) {
+        } else if (p1.b.isDown()) {
             raiser.lower();
         } else {
             raiser.stop();
@@ -226,13 +226,9 @@ public class GyroMecanum extends OpMode
 
             // intake stuff
             if (p1.leftBumper == PRESSED) {
-                if (toggleboi) { // TODO: fix the current position
-                    intake.flipOutIntake();
-                } else {
-                    intake.flipInIntake();
-                }
-                toggleboi = !toggleboi;
+                intake.stopIntake();
             }
+
             if (p1.rightBumper == PRESSED) {
                 if (intake.getIntake().getPower() >= 0) {
                     intake.startIntake();
@@ -282,13 +278,13 @@ public class GyroMecanum extends OpMode
 
         } else {
 
+            if(p2.b.isDown()){
+                raiser.lower();
+            }
+
             // intake stuff
             if (p2.leftBumper == PRESSED) {
-                if (intake.getRotation().getPosition() < 100) { // TODO: fix the current position bound
-                    intake.flipOutIntake();
-                } else {
-                    intake.flipInIntake();
-                }
+                intake.stopIntake();
             }
             if (p2.rightBumper == PRESSED) {
                 if (intake.getIntake().getPower() >= 0) {
