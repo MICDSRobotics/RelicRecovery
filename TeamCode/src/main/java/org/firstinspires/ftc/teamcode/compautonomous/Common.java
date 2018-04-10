@@ -27,9 +27,9 @@ public class Common {
 
     public static void hitJewel(LinearOpMode lop, Servo armRotator, Servo armExtender,
                                 ColorSensorWrapper colorSensorWrapper, boolean isBlueTeam){
-        armRotator.setPosition(0.5);
-        lop.sleep(2000);
-        armExtender.setPosition(0.8);
+        armExtender.setPosition(0.75);
+        lop.sleep(1000);
+        armRotator.setPosition(0.59);
         lop.sleep(1000);
         armExtender.setPosition(0); //servo in 'out' position
         lop.sleep(1500);
@@ -59,8 +59,9 @@ public class Common {
 
         lop.sleep(1000);
 
-        armExtender.setPosition(0.8);
-        armRotator.setPosition(0.5);
+        armExtender.setPosition(0.85);
+        lop.sleep(500);
+        armRotator.setPosition(0.75);
     }
 
     public static void faceCorrectColumn(LinearOpMode lop, MecanumDrive drivetrain,
