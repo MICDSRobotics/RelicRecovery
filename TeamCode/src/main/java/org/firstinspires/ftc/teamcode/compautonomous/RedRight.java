@@ -61,8 +61,11 @@ public class RedRight extends LinearOpMode implements Settings {
         armRotator.scaleRange(0.158, 0.7);
         armExtender.scaleRange(0.16, 0.95);
 
+        // set the hardware to position
         armExtender.setPosition(1.0);
-        armRotator.setPosition(1.0);
+        armRotator.setPosition(0.75);
+        intake.flipInIntake();
+        raiser.retractFlipper();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
@@ -77,6 +80,10 @@ public class RedRight extends LinearOpMode implements Settings {
 
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = Common.scanVuMark(this, vuforiaWrapper);
+
+        this.armExtender.setPosition(0.75);
+        sleep(500);
+        this.armRotator.setPosition(0.59);
 
         //STEP 2: Hitting the jewel
         Common.hitJewel(this, armRotator, armExtender, colorSensorWrapper, false);

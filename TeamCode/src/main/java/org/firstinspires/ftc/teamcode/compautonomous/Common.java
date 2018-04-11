@@ -90,6 +90,8 @@ public class Common {
             default:
                 break;
         }
+
+        lop.telemetry.update();
     }
 
     public static void scoreInColumn(){
