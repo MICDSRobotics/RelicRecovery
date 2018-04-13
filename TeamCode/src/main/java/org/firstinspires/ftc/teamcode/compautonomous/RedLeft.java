@@ -66,7 +66,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         // set the hardware to position
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.75);
-        intake.flipInIntake();
+        //intake.flipInIntake();
         raiser.retractFlipper();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
@@ -79,6 +79,8 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         waitForStart();
 
+        intake.flipOutIntake();
+
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = Common.scanVuMark(this, vuforiaWrapper);
 
@@ -88,7 +90,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(1000);
 
         // Move backwards off balancing stone
-        this.intake.flipInIntake();
+        //this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         sleep(TimeOffsetVoltage.calculateDistance(voltage, 50));
@@ -100,27 +102,28 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain.setAngle(imuWrapper, -Math.PI/2);
         sleep(500);
 
-        //Lower raiser a bit
+        /*Lower raiser a bit
         this.raiser.lower();
         sleep(500);
         this.raiser.stop();
+        */
 
         Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
 
         telemetry.update();
 
         drivetrain.stopMoving();
-        sleep(distanceToWall);
+        //sleep(distanceToWall);
 
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(500);
+        //drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
+        //sleep(200);
         raiser.outtakeGlyph();
-        sleep(700);
+        sleep(1000);
 
-        drivetrain.stopMoving();
-        sleep(200);
+        //drivetrain.stopMoving();
+        //sleep(500);
 
-        Common.wiggle(this, drivetrain);
+        //Common.wiggle(this, drivetrain);
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(distanceToWall + 150);
