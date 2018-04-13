@@ -214,13 +214,12 @@ public class GyroMecanum extends OpMode
             }
 
             if(p1.dpadUp.isDown()){
-                intake.flipOutIntake();
-            }
-
-            if(p1.dpadDown.isDown()){
                 intake.flipInIntake();
             }
 
+            if(p1.dpadDown.isDown()){
+                intake.flipOutIntake();
+            }
 
         } else {
 
@@ -263,11 +262,11 @@ public class GyroMecanum extends OpMode
             }
 
             if(p2.dpadUp.isDown()){
-                intake.flipOutIntake();
+                intake.flipInIntake();
             }
 
             if(p2.dpadDown.isDown()){
-                intake.flipInIntake();
+                intake.flipOutIntake();
             }
 
             // recalibrate IMU
