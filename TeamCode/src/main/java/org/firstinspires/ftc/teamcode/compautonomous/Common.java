@@ -29,9 +29,9 @@ public class Common {
                                 ColorSensorWrapper colorSensorWrapper, boolean isBlueTeam){
         armExtender.setPosition(0.75);
         lop.sleep(1000);
-        armRotator.setPosition(0.59);
+        armRotator.setPosition(0.55);
         lop.sleep(1000);
-        armExtender.setPosition(0); //servo in 'out' position
+        armExtender.setPosition(0.03); //servo in 'out' position
         lop.sleep(1500);
 
         lop.telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
