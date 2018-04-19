@@ -65,7 +65,7 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         // set the hardware to position
         armExtender.setPosition(1.0);
-        armRotator.setPosition(0.75);
+        armRotator.setPosition(1.0);
         //intake.flipInIntake();
         //raiser.retractFlipper();
 

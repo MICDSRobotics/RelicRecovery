@@ -64,7 +64,7 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         // set the hardware to position
         armExtender.setPosition(1.0);
-        armRotator.setPosition(0.75);
+        armRotator.setPosition(1.0);
         //intake.flipInIntake();
         //raiser.retractFlipper();
 
@@ -110,7 +110,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         //Move back to cryptobox, now with consistent distances.
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 40));
+        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 27));
 
         robot.stopMoving();
         sleep(1000);

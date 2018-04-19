@@ -31,9 +31,9 @@ public class Common {
 
     public static void hitJewel(LinearOpMode lop, Servo armRotator, Servo armExtender,
                                 ColorSensorWrapper colorSensorWrapper, boolean isBlueTeam){
-        armExtender.setPosition(0.75);
+        armExtender.setPosition(0.74);
         lop.sleep(1000);
-        armRotator.setPosition(0.55);
+        armRotator.setPosition(0.849);
         lop.sleep(1000);
         armExtender.setPosition(0.03); //servo in 'out' position
         lop.sleep(1500);
