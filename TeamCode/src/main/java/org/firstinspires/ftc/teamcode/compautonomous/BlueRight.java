@@ -65,14 +65,14 @@ public class BlueRight extends LinearOpMode implements Settings{
         // set the hardware to position
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.75);
-        intake.flipInIntake();
-        raiser.retractFlipper();
+        //intake.flipInIntake();
+        //raiser.retractFlipper();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        raiser.retractFlipper();
+        //raiser.retractFlipper();
 
         telemetry.update();
 
@@ -88,19 +88,29 @@ public class BlueRight extends LinearOpMode implements Settings{
 
         sleep(1000);
 
-        //STEP 3: Move off balancing stone in front of cryptobox.
-        // Move off stone
+        // STEP 3: MOVE OFF BALANCING STONE
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(2000);
-        this.drivetrain.stopMoving();
-        //Hit front of stone with back of bot
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        // 115cm
+        double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 80));
+
+        robot.stopMoving();
         sleep(1000);
-        drivetrain.stopMoving();
+
+        drivetrain.setAngle(imuWrapper, 0);
+        sleep(1000);
+
+        //Back is touching balancing stone
+        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        sleep(750);
+
+        robot.stopMoving();
+        sleep(500);
+
         //Move back to cryptobox, now with consistent distances.
         drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 45));
+        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 40));
 
         robot.stopMoving();
         sleep(1000);
@@ -112,7 +122,7 @@ public class BlueRight extends LinearOpMode implements Settings{
         //Move forward a bit
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(),1,0);
         this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 5));
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 5));
 
         Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
 

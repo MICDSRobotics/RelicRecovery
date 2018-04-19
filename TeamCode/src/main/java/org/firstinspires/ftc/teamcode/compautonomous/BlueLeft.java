@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.robotplus.hardware.Robot;
  */
 
 @Autonomous(name="BlueLeft", group="compauto")
-public class BlueLeft extends LinearOpMode implements Settings{
+public class BlueLeft extends LinearOpMode implements Settings {
 
     private Robot robot;
     private MecanumDrive drivetrain;
@@ -66,14 +66,14 @@ public class BlueLeft extends LinearOpMode implements Settings{
         // set the hardware to position
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.75);
-        intake.flipInIntake();
-        raiser.retractFlipper();
+        //intake.flipInIntake();
+        //raiser.retractFlipper();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        raiser.retractFlipper();
+        //raiser.retractFlipper();
 
         telemetry.update();
 
@@ -89,15 +89,12 @@ public class BlueLeft extends LinearOpMode implements Settings{
 
         sleep(1000);
 
-        this.intake.flipInIntake();
+        //this.intake.flipInIntake();
         // STEP 3: MOVE OFF BALANCING STONE
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 170));
-        this.drivetrain.stopMoving();
-        this.intake.stopIntake();
-        sleep(100);
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 80));
 
         robot.stopMoving();
         sleep(1000);
@@ -105,15 +102,16 @@ public class BlueLeft extends LinearOpMode implements Settings{
         drivetrain.setAngle(imuWrapper, 0);
         sleep(1000);
 
+        //Back is touching balancing stone
         drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(750);
 
         robot.stopMoving();
-        sleep(1000);
+        sleep(500);
 
         //STEP 4: MOVE TOWARDS CRYPTOBOX
         drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1,0);
-        sleep(sideShort - 100);
+        sleep(sideShort);
 
         robot.stopMoving();
         sleep(1000);
@@ -122,9 +120,9 @@ public class BlueLeft extends LinearOpMode implements Settings{
         sleep(1000);
 
         //Lower raiser a bit
-        this.raiser.lower();
-        sleep(500);
-        this.raiser.stop();
+        //this.raiser.lower();
+        //sleep(500);
+        //this.raiser.stop();
 
         //STEP 5: SCORE GLYPH INTO CORRECT COLUMN
         Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);

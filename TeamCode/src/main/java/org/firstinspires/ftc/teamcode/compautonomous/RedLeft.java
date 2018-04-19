@@ -67,7 +67,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         armExtender.setPosition(1.0);
         armRotator.setPosition(0.75);
         //intake.flipInIntake();
-        raiser.retractFlipper();
+        //raiser.retractFlipper();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
@@ -93,7 +93,7 @@ public class RedLeft extends LinearOpMode implements Settings {
         //this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep(TimeOffsetVoltage.calculateDistance(voltage, 50));
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 55));
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
         sleep(100);
@@ -111,6 +111,10 @@ public class RedLeft extends LinearOpMode implements Settings {
         Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
 
         telemetry.update();
+
+        this.raiser.raiseUp();
+        sleep(750);
+        this.raiser.stop();
 
         drivetrain.stopMoving();
         //sleep(distanceToWall);
@@ -138,6 +142,10 @@ public class RedLeft extends LinearOpMode implements Settings {
         this.drivetrain.stopMoving();
 
         telemetry.update();
+
+        this.raiser.lower();
+        sleep(750);
+        this.raiser.stop();
 
         sleep(500);
 
