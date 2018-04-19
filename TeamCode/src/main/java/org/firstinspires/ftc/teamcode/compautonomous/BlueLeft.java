@@ -126,26 +126,10 @@ public class BlueLeft extends LinearOpMode implements Settings {
 
         //STEP 5: SCORE GLYPH INTO CORRECT COLUMN
         Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
-        telemetry.update();
 
-        drivetrain.stopMoving();
-        sleep(500);
-
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(distanceToWall);
-        this.drivetrain.stopMoving();
-        sleep(750);
-        raiser.outtakeGlyph();
-        sleep(700);
-
-        drivetrain.stopMoving();
-        sleep(200);
-
-        Common.wiggle(this, drivetrain);
-
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(distanceToWall + 150);
-        this.drivetrain.stopMoving();
+        this.armExtender.setPosition(0.79);
+        this.armRotator.setPosition(0.309);
+        Common.scoreInColumn(this, drivetrain, raiser);
 
         // pull out
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
@@ -155,7 +139,5 @@ public class BlueLeft extends LinearOpMode implements Settings {
         telemetry.update();
 
         sleep(500);
-
     }
-
 }
