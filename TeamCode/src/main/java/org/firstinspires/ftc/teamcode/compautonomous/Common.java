@@ -135,26 +135,17 @@ public class Common {
         // Attempt to pick up a block
         intake.startIntake();
         drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        lop.sleep(1500);
+        lop.sleep(800);
         drive.stopMoving();
-        lop.sleep(100);
-        drive.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0);
-        lop.sleep(100);
-        drive.stopMoving();
-        lop.sleep(50);
-        drive.complexDrive(MecanumDrive.Direction.UP.angle(), 0, 1);
-        lop.sleep(50);
-        drive.stopMoving();
-        intake.stopIntake();
         lop.sleep(100);
 
         // Move back towards cryptobox
         drive.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         //55
-        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 45));
+        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 35));
         drive.stopMoving();
         intake.flipOutIntake();
-        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 10));
+        lop.sleep(1500);
         wiggle(lop, drive);
         wiggle(lop, drive);
         drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);

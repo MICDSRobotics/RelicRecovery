@@ -180,12 +180,13 @@ public class NotGyroMecanum extends OpMode
             raiser.stop();
         }
 
-        //Set arm rotation servo positions
+        /*Set arm rotation servo positions
         if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.05));
         } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.05));
         }
+        */
 
         telemetry.addData("ArmRotator Position", armRotator.getPosition());
 
@@ -236,12 +237,13 @@ public class NotGyroMecanum extends OpMode
                 }
             }
 
-            //Set arm extender servo positions
+            /*Set arm extender servo positions
             if(p1.dpadUp.isDown()){
                 armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
             } else if(p1.dpadDown.isDown()){
                 armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
             }
+            */
 
         }
 
@@ -293,14 +295,18 @@ public class NotGyroMecanum extends OpMode
                 }
             }
 
-            //Set arm extender servo positions
+            /*Set arm extender servo positions
             if(p2.dpadUp.isDown()){
                 armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
             } else if(p2.dpadDown.isDown()){
                 armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
             }
+            */
 
         }
+
+        armExtender.setPosition(0.74);
+        armRotator.setPosition(0.849);
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
         telemetry.addData("Intake Flipper", intake.getRotation().getPosition());
