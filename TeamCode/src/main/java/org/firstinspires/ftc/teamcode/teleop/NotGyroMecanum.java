@@ -53,9 +53,9 @@ import static org.firstinspires.ftc.teamcode.robotplus.gamepadwrapper.Controller
  * @since 1/4/2018
  */
 
-@TeleOp(name="Mecanum Robot", group="Competition OpModes")
+@TeleOp(name="Not Gyro Mecanum", group="Competition OpModes")
 //@Disabled
-public class GyroMecanum extends OpMode
+public class NotGyroMecanum extends OpMode
 {
 
     private int counts;
@@ -140,22 +140,22 @@ public class GyroMecanum extends OpMode
         //Drivetrain switching & low speed
         if (accessControl.isG2Primary()) {
             if (this.lowSpeed) {
-                //drivetrain.complexDrive(gamepad2, telemetry, 0.5);
-                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
+                drivetrain.complexDrive(gamepad2, telemetry, 0.5);
+                //drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
-                //drivetrain.complexDrive(gamepad2, telemetry);
-                drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+                drivetrain.complexDrive(gamepad2, telemetry);
+                //drivetrain.gyroDrive(gamepad2, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
         else {
             if (this.lowSpeed) {
-                //drivetrain.complexDrive(gamepad1, telemetry, 0.5);
-                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
+                drivetrain.complexDrive(gamepad1, telemetry, 0.5);
+                //drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle, 0.5);
             }
             else {
-                //drivetrain.complexDrive(gamepad1, telemetry);
-                drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
+                drivetrain.complexDrive(gamepad1, telemetry);
+                //drivetrain.gyroDrive(gamepad1, telemetry, imuWrapper.getOrientation().toAngleUnit(AngleUnit.RADIANS).firstAngle);
             }
         }
 
@@ -180,12 +180,13 @@ public class GyroMecanum extends OpMode
             raiser.stop();
         }
 
-        //Set arm rotation servo positions
+        /*Set arm rotation servo positions
         if(p1.dpadLeft.isDown() || p2.dpadLeft.isDown()){
             armRotator.setPosition(Math.min(1, armRotator.getPosition() + 0.05));
         } else if (p1.dpadRight.isDown() || p2.dpadRight.isDown()){
             armRotator.setPosition(Math.max(0, armRotator.getPosition() - 0.05));
         }
+        */
 
         telemetry.addData("ArmRotator Position", armRotator.getPosition());
 
@@ -236,12 +237,13 @@ public class GyroMecanum extends OpMode
                 }
             }
 
-            //Set arm extender servo positions
+            /*Set arm extender servo positions
             if(p1.dpadUp.isDown()){
                 armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
             } else if(p1.dpadDown.isDown()){
                 armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
             }
+            */
 
         }
 
@@ -293,14 +295,18 @@ public class GyroMecanum extends OpMode
                 }
             }
 
-            //Set arm extender servo positions
+            /*Set arm extender servo positions
             if(p2.dpadUp.isDown()){
                 armExtender.setPosition(Math.min(1, armExtender.getPosition() + 0.05));
             } else if(p2.dpadDown.isDown()){
                 armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
             }
+            */
 
         }
+
+        armExtender.setPosition(0.74);
+        armRotator.setPosition(0.849);
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
         telemetry.addData("Intake Flipper", intake.getRotation().getPosition());

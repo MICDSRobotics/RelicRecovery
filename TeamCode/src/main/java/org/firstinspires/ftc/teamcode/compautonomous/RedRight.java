@@ -61,22 +61,27 @@ public class RedRight extends LinearOpMode implements Settings {
         armRotator.scaleRange(0.158, 0.7);
         armExtender.scaleRange(0.16, 0.95);
 
+        // set the hardware to position
         armExtender.setPosition(1.0);
         armRotator.setPosition(1.0);
+        raiser.retractFlipper();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
         vuforiaWrapper.getLoader().getTrackables().activate();
 
-        raiser.retractFlipper();
-        intake.flipInIntake();
-
         telemetry.update();
 
         waitForStart();
 
+        intake.flipOutIntake();
+
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = Common.scanVuMark(this, vuforiaWrapper);
+
+        this.armExtender.setPosition(0.75);
+        sleep(500);
+        this.armRotator.setPosition(0.59);
 
         //STEP 2: Hitting the jewel
         Common.hitJewel(this, armRotator, armExtender, colorSensorWrapper, false);
@@ -84,11 +89,10 @@ public class RedRight extends LinearOpMode implements Settings {
         sleep(1000);
 
         // move backwards and slam into the wall
-        this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep(TimeOffsetVoltage.calculateDistance(voltage, 125)); // 115cm
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 40)); // 115cm
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
         sleep(100);
@@ -180,5 +184,4 @@ public class RedRight extends LinearOpMode implements Settings {
         this.drivetrain.stopMoving();
         */
     }
-
 }

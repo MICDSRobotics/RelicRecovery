@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.compautonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.teamcode.robotplus.autonomous.TimeOffsetVoltage;
 import org.firstinspires.ftc.teamcode.robotplus.autonomous.VuforiaWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.ColorSensorWrapper;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.ComplexRaiser;
+import org.firstinspires.ftc.teamcode.robotplus.hardware.FlipperIntake;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUAccelerationIntegrator;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.IMUWrapper;
 import org.firstinspires.ftc.teamcode.robotplus.hardware.MecanumDrive;
@@ -27,11 +31,11 @@ public class Common {
 
     public static void hitJewel(LinearOpMode lop, Servo armRotator, Servo armExtender,
                                 ColorSensorWrapper colorSensorWrapper, boolean isBlueTeam){
-        armRotator.setPosition(0.5);
-        lop.sleep(2000);
-        armExtender.setPosition(0.8);
+        armExtender.setPosition(0.74);
         lop.sleep(1000);
-        armExtender.setPosition(0); //servo in 'out' position
+        armRotator.setPosition(0.849);
+        lop.sleep(1000);
+        armExtender.setPosition(0.03); //servo in 'out' position
         lop.sleep(1500);
 
         lop.telemetry.addData("Color Sensor", "R: %f \nB: %f ", colorSensorWrapper.getRGBValues()[0], colorSensorWrapper.getRGBValues()[2]);
@@ -59,8 +63,9 @@ public class Common {
 
         lop.sleep(1000);
 
-        armExtender.setPosition(0.8);
-        armRotator.setPosition(0.5);
+        armExtender.setPosition(0.85);
+        lop.sleep(500);
+        armRotator.setPosition(0.75);
     }
 
     public static void faceCorrectColumn(LinearOpMode lop, MecanumDrive drivetrain,
@@ -89,10 +94,23 @@ public class Common {
             default:
                 break;
         }
+
+        lop.telemetry.update();
     }
 
-    public static void scoreInColumn(){
+    public static void scoreInColumn(LinearOpMode lop, MecanumDrive dt, ComplexRaiser raiser){
+        raiser.outtakeGlyph();
+        lop.sleep(3500);
+        dt.complexDrive(MecanumDrive.Direction.DOWN.angle(), Settings.slamIntoWallSpeed, 0);
+        lop.sleep(Settings.distanceToWall);
+        dt.stopMoving();
+        lop.sleep(250);
 
+        wiggle(lop, dt);
+
+        dt.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        lop.sleep(Settings.distanceToWall + 150);
+        dt.stopMoving();
     }
 
     //Method to help guard against glyph getting stuck between columns
@@ -103,5 +121,35 @@ public class Common {
         lop.sleep(150);
         dt.complexDrive(MecanumDrive.Direction.DOWNRIGHT.angle(), 0.75, 0);
         lop.sleep(150);
+    }
+
+    public static void attemptToGetMultiBlock(LinearOpMode lop, MecanumDrive drive, IMUWrapper imu, FlipperIntake intake, ComplexRaiser raiser, HardwareMap hardwareMap) {
+        // Face glyph horde using the gyro
+        //drive.setAngle(imu, -Math.PI/2);
+        // briefly ram into the block pile
+        drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 55));
+        drive.stopMoving();
+        lop.sleep(500);
+
+        // Attempt to pick up a block
+        intake.startIntake();
+        drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        lop.sleep(800);
+        drive.stopMoving();
+        lop.sleep(100);
+
+        // Move back towards cryptobox
+        drive.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        //55
+        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 35));
+        drive.stopMoving();
+        intake.flipOutIntake();
+        lop.sleep(1500);
+        wiggle(lop, drive);
+        wiggle(lop, drive);
+        drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        lop.sleep(200);
+        drive.stopMoving();
     }
 }

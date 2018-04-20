@@ -19,7 +19,6 @@ import java.sql.Time;
  */
 
 @Autonomous(name = "TimeTesting", group = "Testing")
-@Disabled
 public class AutonomousTimeTesting extends LinearOpMode {
     private MecanumDrive drive;
     private Robot robot;

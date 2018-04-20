@@ -63,8 +63,11 @@ public class RedLeft extends LinearOpMode implements Settings {
         armRotator.scaleRange(0.158, 0.7);
         armExtender.scaleRange(0.16, 0.95);
 
+        // set the hardware to position
         armExtender.setPosition(1.0);
         armRotator.setPosition(1.0);
+        //intake.flipInIntake();
+        //raiser.retractFlipper();
 
         colorSensorWrapper = new ColorSensorWrapper(hardwareMap);
 
@@ -76,6 +79,8 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         waitForStart();
 
+        intake.flipOutIntake();
+
         //STEP 1: Scan vuforia pattern
         relicRecoveryVuMark = Common.scanVuMark(this, vuforiaWrapper);
 
@@ -85,11 +90,10 @@ public class RedLeft extends LinearOpMode implements Settings {
         sleep(1000);
 
         // Move backwards off balancing stone
-        this.intake.flipInIntake();
+        //this.intake.flipInIntake();
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0); // move backwards
-        // 160cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long)TimeOffsetVoltage.calculateDistance(voltage, 175));
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 55));
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
         sleep(100);
@@ -98,78 +102,54 @@ public class RedLeft extends LinearOpMode implements Settings {
         drivetrain.setAngle(imuWrapper, -Math.PI/2);
         sleep(500);
 
-        //Lower raiser a bit
+        /*Lower raiser a bit
         this.raiser.lower();
         sleep(500);
         this.raiser.stop();
+        */
 
         Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
 
         telemetry.update();
 
-        drivetrain.stopMoving();
-        sleep(distanceToWall);
+        this.raiser.raiseUp();
+        sleep(750);
+        this.raiser.stop();
 
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
-        sleep(500);
+        drivetrain.stopMoving();
+        //sleep(distanceToWall);
+
+        //drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), slamIntoWallSpeed, 0);
+        //sleep(200);
         raiser.outtakeGlyph();
-        sleep(700);
+        sleep(1000);
 
-        drivetrain.stopMoving();
-        sleep(200);
+        //drivetrain.stopMoving();
+        //sleep(500);
 
-        Common.wiggle(this, drivetrain);
+        //Common.wiggle(this, drivetrain);
 
         this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         sleep(distanceToWall + 150);
         this.drivetrain.stopMoving();
 
+        Common.wiggle(this, this.drivetrain);
+        Common.wiggle(this, this.drivetrain);
+
         // pull out
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(300);
+        sleep(500);
         this.drivetrain.stopMoving();
 
         telemetry.update();
 
+        this.raiser.lower();
+        sleep(750);
+        this.raiser.stop();
+
         sleep(500);
 
         // TODO: REMOVE IF NOT WORK THIS IS PSEUDO CODE
-        /*this.attemptToGetMultiBlock();
-        sleep(500);
-        //this.moveToCorrectColumn();
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(350);
-        this.drivetrain.stopMoving();
-        // pull out
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(300);
-        this.drivetrain.stopMoving();*/
-    }
-
-    public void attemptToGetMultiBlock() {
-        // Face glyph horde using the gyro
-        this.drivetrain.setAngle(this.imuWrapper, -Math.PI/2);
-        // briefly ram into the block pile
-        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        sleep(1000);
-        this.drivetrain.stopMoving();
-        sleep(500);
-
-        // Attempt to pick up a block
-        intake.startIntake();
-        sleep(1000);
-        drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 0.5, 0);
-        sleep(100);
-        drivetrain.stopMoving();
-
-        //Raise up
-        raiser.raiseUp();
-        sleep(200);
-        raiser.stop();
-        sleep(200);
-        // Move back towards cryptobox
-        this.drivetrain.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 110));
-        drivetrain.stopMoving();
+        Common.attemptToGetMultiBlock(this, drivetrain, imuWrapper, intake, raiser, hardwareMap);
     }
 }
