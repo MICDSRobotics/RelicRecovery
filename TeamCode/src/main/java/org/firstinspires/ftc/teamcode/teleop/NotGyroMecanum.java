@@ -64,6 +64,7 @@ public class NotGyroMecanum extends OpMode
     private ElapsedTime runtime = new ElapsedTime();
 
     private boolean lowSpeed = false;
+    private boolean flipperReady = false;
 
     private Robot robot;
 
@@ -165,9 +166,9 @@ public class NotGyroMecanum extends OpMode
 
         telemetry.addData("Access", accessControl.getTelemetryState());
 
-        if (p1.x == PRESSED || p2.x == PRESSED) {
+        /*if (p1.x == PRESSED || p2.x == PRESSED) {
             this.lowSpeed = !this.lowSpeed;
-        }
+        } */
 
         telemetry.addData("Slowmode", this.lowSpeed);
 
@@ -198,9 +199,11 @@ public class NotGyroMecanum extends OpMode
             // outtake stuff
             if (p1.leftBumper.isDown()) {
                 raiser.retractFlipper();
+                //raiser.getX().decrementServo();
             }
             if (p1.rightBumper.isDown()) {
                 raiser.outtakeGlyph();
+                //raiser.getX().incrementServo();
             }
 
             // clear intake if in bad situation
@@ -244,6 +247,17 @@ public class NotGyroMecanum extends OpMode
                 armExtender.setPosition(Math.max(0, armExtender.getPosition() - 0.05));
             }
             */
+
+            if (p1.x == PRESSED) {
+                this.flipperReady = !this.flipperReady;
+
+                if (flipperReady) {
+                    this.raiser.getX().getServo().setPosition(0.8);
+                }
+                else {
+                    this.raiser.getX().getServo().setPosition(1.0);
+                }
+            }
 
         }
 
@@ -303,6 +317,17 @@ public class NotGyroMecanum extends OpMode
             }
             */
 
+            if (p2.x == PRESSED) {
+                this.flipperReady = !this.flipperReady;
+
+                if (flipperReady) {
+                    this.raiser.getX().getServo().setPosition(0.8);
+                }
+                else {
+                    this.raiser.getX().getServo().setPosition(1.0);
+                }
+            }
+
         }
 
         armExtender.setPosition(0.74);
@@ -310,6 +335,7 @@ public class NotGyroMecanum extends OpMode
 
         telemetry.addData("Intake Motors", this.intake.getIntake().getPower());
         telemetry.addData("Intake Flipper", intake.getRotation().getPosition());
+        // telemetry.addData("Flipper Servo", this.raiser.getX().getServo().getPosition());
 
         telemetry.update();
         p1.update();
