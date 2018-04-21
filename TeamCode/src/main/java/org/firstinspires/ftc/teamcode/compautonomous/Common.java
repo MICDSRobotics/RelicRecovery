@@ -123,33 +123,48 @@ public class Common {
         lop.sleep(150);
     }
 
+    public static void backWiggle(LinearOpMode lop, MecanumDrive dt){
+        dt.complexDrive(MecanumDrive.Direction.UPLEFT.angle(), 0.75, 0);
+        lop.sleep(150);
+        dt.complexDrive(MecanumDrive.Direction.UP.angle(), 0.75, 0);
+        lop.sleep(150);
+        dt.complexDrive(MecanumDrive.Direction.UPRIGHT.angle(), 0.75, 0);
+        lop.sleep(150);
+    }
+
     public static void attemptToGetMultiBlock(LinearOpMode lop, MecanumDrive drive, IMUWrapper imu, FlipperIntake intake, ComplexRaiser raiser, HardwareMap hardwareMap) {
         // Face glyph horde using the gyro
-        //drive.setAngle(imu, -Math.PI/2);
+        drive.setAngle(imu, -Math.PI/2);
         // briefly ram into the block pile
-        drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 55));
+        raiser.getX().retractOuttake();
+        intake.startIntake();
+        drive.complexDrive(MecanumDrive.Direction.UP.angle(), 0.5, 0);
+        backWiggle(lop, drive);
+        backWiggle(lop, drive);
+        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 50));
         drive.stopMoving();
         lop.sleep(500);
 
+        drive.setAngle(imu, -Math.PI/2);
+
         // Attempt to pick up a block
-        intake.startIntake();
-        drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
+        /*intake.startIntake();
+        drive.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         lop.sleep(800);
         drive.stopMoving();
-        lop.sleep(100);
+        lop.sleep(100);*/
 
         // Move back towards cryptobox
-        drive.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
         //55
-        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 35));
+        lop.sleep(TimeOffsetVoltage.calculateDistance(hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage(), 45));
         drive.stopMoving();
-        intake.flipOutIntake();
+        raiser.getX().spitOutGlyph();
         lop.sleep(1500);
         wiggle(lop, drive);
         wiggle(lop, drive);
-        drive.complexDrive(MecanumDrive.Direction.DOWN.angle(), 1, 0);
-        lop.sleep(200);
+        drive.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        lop.sleep(300);
         drive.stopMoving();
     }
 }

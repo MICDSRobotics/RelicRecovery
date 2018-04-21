@@ -111,7 +111,7 @@ public class BlueLeft extends LinearOpMode implements Settings {
 
         //STEP 4: MOVE TOWARDS CRYPTOBOX
         drivetrain.complexDrive(MecanumDrive.Direction.RIGHT.angle(), 1,0);
-        sleep(sideShort);
+        sleep(sideShort - 100);
 
         robot.stopMoving();
         sleep(1000);

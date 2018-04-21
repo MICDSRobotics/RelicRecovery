@@ -112,9 +112,9 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         telemetry.update();
 
-        this.raiser.raiseUp();
+        /*this.raiser.raiseUp();
         sleep(750);
-        this.raiser.stop();
+        this.raiser.stop();*/
 
         drivetrain.stopMoving();
         //sleep(distanceToWall);
@@ -143,9 +143,9 @@ public class RedLeft extends LinearOpMode implements Settings {
 
         telemetry.update();
 
-        this.raiser.lower();
+        /*this.raiser.lower();
         sleep(750);
-        this.raiser.stop();
+        this.raiser.stop();*/
 
         sleep(500);
 
