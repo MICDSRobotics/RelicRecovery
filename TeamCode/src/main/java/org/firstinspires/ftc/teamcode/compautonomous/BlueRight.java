@@ -89,10 +89,10 @@ public class BlueRight extends LinearOpMode implements Settings{
         sleep(1000);
 
         // STEP 3: MOVE OFF BALANCING STONE
-        /*this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
+        this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
         // 115cm
         double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep(TimeOffsetVoltage.calculateDistance(voltage, 80)); // 80
+        sleep(TimeOffsetVoltage.calculateDistance(voltage, 80));
 
         robot.stopMoving();
         sleep(1000);
@@ -107,18 +107,9 @@ public class BlueRight extends LinearOpMode implements Settings{
         robot.stopMoving();
         sleep(500);
 
-        //Move back to cryptobox, now with consistent distances.
-        drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0);
-        this.voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
-        sleep((long) TimeOffsetVoltage.calculateDistance(voltage, 27));
-
-        robot.stopMoving();
-        sleep(1000);
-
-        */
-
+        //STEP 4: Move to Cryptobox
         this.drivetrain.complexDrive(MecanumDrive.Direction.UP.angle(), 1, 0); // move backwards
-        double voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
+        voltage = hardwareMap.voltageSensor.get("Expansion Hub 1").getVoltage();
         sleep(TimeOffsetVoltage.calculateDistance(voltage, 47));
         this.drivetrain.stopMoving();
         this.intake.stopIntake();
@@ -131,8 +122,8 @@ public class BlueRight extends LinearOpMode implements Settings{
         Common.faceCorrectColumn(this, drivetrain, relicRecoveryVuMark, imuWrapper);
 
         //SCORE
-        //this.armExtender.setPosition(0.79);
-        //this.armRotator.setPosition(0.309);
+        this.armExtender.setPosition(0.79);
+        this.armRotator.setPosition(0.309);
         Common.scoreInColumn(this, drivetrain, raiser);
 
         // TODO: REMOVE IF NOT WORK THIS IS PSEUDO CODE
